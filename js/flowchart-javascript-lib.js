@@ -3,9 +3,21 @@
 /*
 
 
-	flowchart({
-	
-	});
+	flowchart([
+		{
+			"name": "", // needs to be unique
+			"text": {
+				"title": "",
+				"subtitle": "",
+				"link": "", // if need to link the whole box
+				"body": ""
+			}
+			"parent_name": {
+				"p1": "" //needs to be the unique name of the parent icon - if not found will not display - theoretically can be infinitel ist
+			}, // what it will be dependant on
+			"icon_name": "" // needs to be in the filing system
+		}
+	]);
 
 
 
