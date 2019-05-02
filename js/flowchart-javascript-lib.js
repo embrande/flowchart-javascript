@@ -5,7 +5,7 @@
 
 	flowchart([
 		{
-			"name": "", // needs to be unique
+			"name": "", // needs to be unique with underscores
 			"text": {
 				"title": "",
 				"subtitle": "",
