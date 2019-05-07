@@ -23,18 +23,31 @@
 
 */
 
-var flowchartAppController = function(){
-
-};
 
 
-
-var flowchartUIController = function(){
-
-};
+var flowchartDataController = (function(){
 
 
 
-var flowchartDataController = function(){
+});
 
-};
+
+
+var flowchartUIController = (function(){
+
+});
+
+
+
+
+
+var flowchartAppController = (function(dCon, UICon){
+
+
+	return {
+		init: function(){
+			
+		}
+	}
+
+})(flowchartDataController, flowchartUIController);
