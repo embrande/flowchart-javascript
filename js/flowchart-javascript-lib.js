@@ -10,7 +10,8 @@
 				"title": "",
 				"subtitle": "",
 				"link": "", // if need to link the whole box
-				"body": ""
+				"body": "",
+				"email": "" // url of email
 			}
 			"parent_name": {
 				"p1": "" //needs to be the unique name of the parent icon - if not found will display as it's own landmark under the section it's labelled under - theoretically can be infinitel ist
