@@ -13,8 +13,11 @@
 				"body": ""
 			}
 			"parent_name": {
-				"p1": "" //needs to be the unique name of the parent icon - if not found will not display - theoretically can be infinitel ist
+				"p1": "" //needs to be the unique name of the parent icon - if not found will display as it's own landmark under the section it's labelled under - theoretically can be infinitel ist
 			}, // what it will be dependant on
+			"section": {
+				"name": ""
+			}, // This is how you assign this to different sections
 			"icon_name": "" // needs to be in the filing system
 		}
 	]);
@@ -46,7 +49,7 @@ var flowchartAppController = (function(dCon, UICon){
 
 	return {
 		init: function(){
-			
+
 		}
 	}
 
