@@ -26,9 +26,10 @@
 		
 		window.onload = (function(){
 
-			var c = document.getElementById("flowchart-stage");
-
-			console.log(c);
+			var c = document.getElementById("flowchart-stage"),
+				c_graph = c.getContext("2d");
+			
+			c_graph.beginPath();
 
 		});
 

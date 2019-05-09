@@ -2,3 +2,20 @@
 
 
 loop through JSON - place into data object
+
+	add fields, parents, and children
+
+
+loop through data object
+
+	add fields to UI
+
+		add parents to UI
+
+			collect furthest vertical position
+
+			collect furthest horizontal position
+
+			add children
+
+
