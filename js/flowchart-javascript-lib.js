@@ -19,7 +19,9 @@
 			"section": {
 				"name": ""
 			}, // This is how you assign this to different sections
-			"icon_name": "" // needs to be in the filing system
+			"icon_name": "", // needs to be in the filing system
+			"unique_rgb_color": "", // this is the RGB of the line leading to it - ONLY UTELIZED IF IT IS A PARENT
+			"unique_rgb_color_child": "" // this will override rgb color of the parent line
 		}
 	]);
 

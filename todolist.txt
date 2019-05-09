@@ -19,3 +19,7 @@ loop through data object
 			add children
 
 
+collect errors in an array to report to page
+	include no parents, incorrect items etc.
+
+
