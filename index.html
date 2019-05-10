@@ -2,6 +2,9 @@
 <html>
 <head>
 	<title>Testing the index</title>
+	<style type="text/css">
+
+	</style>
 </head>
 <body>
 
@@ -24,14 +27,18 @@
 
 		"use strict";
 		
-		window.onload = (function(){
 
-			var c = document.getElementById("flowchart-stage"),
-				c_graph = c.getContext("2d");
-			
-			c_graph.beginPath();
+		var c = document.getElementById("flowchart-stage"),
+			c_graph = c.getContext("2d");
 
-		});
+		c.style.width = '100%';
+		c.style.height = '100%';
+		
+		var img = new Image();
+		img.src = "img/student.svg";
+		img.onload = function(){
+			c_graph.drawImage(img, 100, 200, 75, 75);
+		}
 
 
 	</script>	
