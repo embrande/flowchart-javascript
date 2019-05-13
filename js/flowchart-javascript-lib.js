@@ -14,11 +14,11 @@
 				"email": "" // url of email
 			}
 			"parent_name": {
-				"p1": "" //needs to be the unique name of the parent icon - if not found will display as it's own landmark under the section it's labelled under - theoretically can be infinitel ist
+				"p_1": "" //needs to be the unique name of the parent icon - if not found will display as it's own landmark under the section it's labelled under - theoretically can be infinitel ist
 			}, // what it will be dependant on
 			"section": {
 				"name": ""
-			}, // This is how you assign this to different sections
+			}, // This is how you assign this to different sections. If empty, it becomes the section
 			"icon_name": "", // needs to be in the filing system
 			"unique_rgb_color": "", // this is the RGB of the line leading to it - ONLY UTELIZED IF IT IS A PARENT
 			"unique_rgb_color_child": "" // this will override rgb color of the parent line
