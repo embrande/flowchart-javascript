@@ -26,23 +26,52 @@
 		<script type="text/javascript">
 			var flowchart-stage = new flowchart([
 				{
-					"name": "freshman_parent",
+					"name": "sophomore_parent",
 					"text": {
-						"title": "Freshman",
+						"title": "Sophomore",
 						"subtitle": "",
+						"topic": "",
+						"audience": "",
+						"overview": "",
 						"link": "",
-						"body": "",
+						"message": "",
 						"email": ""
 					}
 					"parent_name": {
 						"p_1": ""
 					},
+					"sibling_name": "",
 					"section": {
 						"name": ""
 					},
+					"level": "1",
+					"icon_name": "student",
+					"unique_hex_color": "",
+					"unique_hex_color_child": ""
+				},
+				{
+					"name": "sophomore_email_1",
+					"text": {
+						"title": "IUPUI: Where Campus and City Connect",
+						"subtitle": "",
+						"topic": "",
+						"audience": "All sophomore inquiries",
+						"overview": "Broad overview of IUPUI, highlighting our programs, locations, and other things that make us unique",
+						"link": "",
+						"message": "As a high school sophomore, %%First Name %%, it might seem that you're futre as a college student is a lifetime away. But really, it's closer than you think. That's why we want you to consider IUPUI. <br /> <br /> With more than 350 academic programs from Indiana University and Purdue niversity schools, all in the heart of Downtown Indianapolis, IUPUI is a dynamic urban campus that will put you on the path for a lifetime of success. <br /><br /> Here you'll find everything you could want in a college - and more. You'll join a vibrant campus community where there's always something happening, and you'll get the skills and experience you need to reach your dream job. <br /><br /> <strong>As you work towards identifying your dream college, know that we're here to help. If you have any questions, chances are your admissions counselor at IUPUI has the answers!</strong>",
+						"email": ""
+					}
+					"parent_name": {
+						"p1": "sophomore_parent"
+					},
+					"sibling_name": "",
+					"section": {
+						"name": "sophomore_parent"
+					},
+					"level": "",
 					"icon_name": "",
-					"unique_rgb_color": "",
-					"unique_rgb_color_child": ""
+					"unique_hex_color": "",
+					"unique_hex_color_child": ""
 				}
 			]);
 			/*
@@ -54,38 +83,48 @@
 						"text": {
 							"title": "",
 							"subtitle": "",
+							"topic": "",
+							"audience": "",
+							"overview": "",
 							"link": "", // if need to link the whole box
-							"body": "",
+							"message": "",
 							"email": "" // url of email
 						}
 						"parent_name": {
 							"p_1": "" //needs to be the unique name of the parent icon - if not found will display as it's own landmark under the section it's labelled under - theoretically can be infinitel ist
 						}, // what it will be dependant on
+						"sibling_name": "", // Parent uses this to draw a line with a sibling
 						"section": {
 							"name": ""
-						}, // This is how you assign this to different sections. If empty, it becomes the section
+						}, // This is how you assign this to different sections. If empty and no parent, it becomes a section. If a parent 1 is listed and this isn't then p_1 becomes the section
+						"level": "", // This is only for a parent. This forces an object to 
 						"icon_name": "", // needs to be in the filing system
-						"unique_rgb_color": "", // this is the RGB of the line leading to it - ONLY UTELIZED IF IT IS A PARENT
-						"unique_rgb_color_child": "" // this will override rgb color of the parent line
+						"unique_hex_color": "", // this is the RGB of the line leading to it - ONLY UTELIZED IF IT IS A PARENT
+						"unique_hex_color_child": "" // this will override rgb color of the parent line
 					},
 					{
 						"name": "",
 						"text": {
-							"title": "",
+							"title": "Sophmore",
 							"subtitle": "",
+							"topic": "",
+							"audience": "",
+							"overview": "",
 							"link": "",
-							"body": "",
+							"message": "",
 							"email": ""
 						}
 						"parent_name": {
 							"p1": ""
 						},
+						"sibling_name": "",
 						"section": {
 							"name": ""
 						},
+						"level": "",
 						"icon_name": "",
-						"unique_rgb_color": "",
-						"unique_rgb_color_child": ""
+						"unique_hex_color": "",
+						"unique_hex_color_child": ""
 					}
 				]);
 
