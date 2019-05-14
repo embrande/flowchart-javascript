@@ -2,7 +2,7 @@
 // expects a object call after it with JSON and the following layout:
 /*
 
-
+	//As of now, the parent needs to be before the children
 	flowchart([
 		{
 			"name": "", // needs to be unique with underscores
@@ -15,7 +15,7 @@
 				"link": "", // if need to link the whole box
 				"message": "",
 				"email": "" // url of email
-			}
+			},
 			"parent_name": {
 				"p_1": "" //needs to be the unique name of the parent icon - if not found will display as it's own landmark under the section it's labelled under - theoretically can be infinitel ist
 			}, // what it will be dependant on
@@ -39,7 +39,7 @@
 				"link": "",
 				"message": "",
 				"email": ""
-			}
+			},
 			"parent_name": {
 				"p1": ""
 			},
@@ -62,15 +62,33 @@
 
 var flowchartDataController = (function(){
 
+	var FlowchartArrayMember = function(){
+		// Define based on a parent system
+	}
 
+	var flowchartData = {
+		positioning: {
+			x:0,
+			y:0
+		}
+	};
 
-});
+	return {
+		furthestXPoint: function(){
+
+		},
+		furthestYPoint: function(){
+
+		}
+	}
+
+})();
 
 
 
 var flowchartUIController = (function(){
 
-});
+})();
 
 
 
@@ -78,11 +96,27 @@ var flowchartUIController = (function(){
 
 var flowchartAppController = (function(dCon, UICon){
 
+	var loopData = function(flowchart){
+		flowchart.forEach(function(e){
+			if(e.parent_name.p1 == "" || e.parent_name.p1 == undefined){
+				// Parents
+			}else{
+				// Children
+			}
+		});
+
+	}
 
 	return {
-		init: function(){
-
+		init: function(flowVar){
+			loopData(flowVar);
 		}
 	}
 
 })(flowchartDataController, flowchartUIController);
+
+
+
+window.onload = function(){
+	flowchartAppController.init(flowchartStage);
+}
