@@ -30,7 +30,7 @@
 					"text": {
 						"title": "Sophomore",
 						"subtitle": "",
-						"topic": "",
+						"type": "",
 						"audience": "",
 						"overview": "",
 						"link": "",
@@ -54,7 +54,7 @@
 					"text": {
 						"title": "IUPUI: Where Campus and City Connect",
 						"subtitle": "",
-						"topic": "",
+						"type": "Email",
 						"audience": "All sophomore inquiries",
 						"overview": "Broad overview of IUPUI, highlighting our programs, locations, and other things that make us unique",
 						"link": "",
@@ -69,68 +69,131 @@
 						"name": "sophomore_parent"
 					},
 					"level": "",
+					"icon_name": "email",
+					"unique_hex_color": "",
+					"unique_hex_color_child": ""
+				},
+				{
+					"name": "sophomore_email_2",
+					"text": {
+						"title": "Visit campus",
+						"subtitle": "",
+						"type": "Email",
+						"audience": "All sophomore inquiries",
+						"overview": "Promote daily tours and why campus visits are important",
+						"link": "",
+						"message": "Want to know the best way to see if college is the right fit for you, %%First Name%%? See it in person!<br /><br />IUPUI offers a wide-variety of diverse visit opportunities on our campus, including our daily campus visit program (offered twice-daily Monday through Friday and most Saturdays at 9 a.m.), our academic major-based JagDays in the fall and spring, and large-scale campus open houses.<br />When you visit campus, you'll meet with IUPUI staff, current students, and get a feel for why the Jaguar life is the best life, and you'll do it all in the heart of Downtown Indianapolis, one of the most dynamic cities in the Midwest!<br /><br />So what are you waiting for? Sign up to visit IUPUI today - you'll love your experience.",
+						"email": ""
+					}
+					"parent_name": {
+						"p1": "sophomore_parent"
+					},
+					"sibling_name": "",
+					"section": {
+						"name": "sophomore_parent"
+					},
+					"level": "",
+					"icon_name": "email",
+					"unique_hex_color": "",
+					"unique_hex_color_child": ""
+				},
+				{
+					"name": "junior_parent",
+					"text": {
+						"title": "Junior",
+						"subtitle": "",
+						"type": "",
+						"audience": "",
+						"overview": "",
+						"link": "",
+						"message": "",
+						"email": ""
+					}
+					"parent_name": {
+						"p1": ""
+					},
+					"sibling_name": "",
+					"section": {
+						"name": ""
+					},
+					"level": "1",
+					"icon_name": "student",
+					"unique_hex_color": "990000",
+					"unique_hex_color_child": ""
+				},
+				{
+					"name": "junior_email_day_1",
+					"text": {
+						"title": "Day 1: The Best of Three Worlds",
+						"subtitle": "",
+						"type": "Ad-Hoc: Visit Postcard (sent early fall)",
+						"audience": "",
+						"overview": "",
+						"link": "",
+						"message": "You've probably heard the saying, \"the best of both worlds.\" But at IUPUI, you actually get the best of <strong>three worlds</strong>. With more than 350 academic programs from Indiana University and Purdue University schools, all located in the heart of downtown Indianapolis, you’ll have opportunities rarely found at other universities.<br /><br />As Jaguar, you’ll learn from – and work side by side with – renowned faculty who are experts in their field. You’ll take what you learn in the classroom and use it to solve real-world problems in our community. You’ll get hands-on experience that will prepare you for a lifetime of success. And you’ll do it all on an ever-evolving urban campus in the heart of the nation’s fifteenth largest city.<br /><br />[button]Explore our 350+ programs<br /><br /><strong>We're here to help</strong><br /><br />Have a question about IUPUI? Want to know when a representative from IUPUI will be at your school? Whether you are just starting your college search, or finalizing your top schools, your admissions counselor is here to help you with everything IUPUI, and more!",
+						"email": ""
+					}
+					"parent_name": {
+						"p1": "junior_parent"
+					},
+					"sibling_name": "",
+					"section": {
+						"name": "junior_parent"
+					},
+					"level": "1",
+					"icon_name": "adhock",
+					"unique_hex_color": "",
+					"unique_hex_color_child": ""
+				},
+				{
+					"name": "applicant_parent",
+					"text": {
+						"title": "1 Day notification",
+						"subtitle": "",
+						"type": "",
+						"audience": "",
+						"overview": "",
+						"link": "",
+						"message": "",
+						"email": ""
+					}
+					"parent_name": {
+						"p1": ""
+					},
+					"sibling_name": "",
+					"section": {
+						"name": ""
+					},
+					"level": "",
+					"icon_name": "Student",
+					"unique_hex_color": "",
+					"unique_hex_color_child": ""
+				},
+				{
+					"name": "day_1_notification",
+					"text": {
+						"title": "Day 1 notification",
+						"subtitle": "",
+						"type": "",
+						"audience": "Applicants",
+						"overview": "",
+						"link": "",
+						"message": "Day 1 notification message",
+						"email": ""
+					}
+					"parent_name": {
+						"p1": "applicant_parent"
+					},
+					"sibling_name": "",
+					"section": {
+						"name": ""
+					},
+					"level": "",
 					"icon_name": "",
 					"unique_hex_color": "",
 					"unique_hex_color_child": ""
 				}
 			]);
-			/*
-
-
-				flowchart([
-					{
-						"name": "", // needs to be unique with underscores
-						"text": {
-							"title": "",
-							"subtitle": "",
-							"topic": "",
-							"audience": "",
-							"overview": "",
-							"link": "", // if need to link the whole box
-							"message": "",
-							"email": "" // url of email
-						}
-						"parent_name": {
-							"p_1": "" //needs to be the unique name of the parent icon - if not found will display as it's own landmark under the section it's labelled under - theoretically can be infinitel ist
-						}, // what it will be dependant on
-						"sibling_name": "", // Parent uses this to draw a line with a sibling
-						"section": {
-							"name": ""
-						}, // This is how you assign this to different sections. If empty and no parent, it becomes a section. If a parent 1 is listed and this isn't then p_1 becomes the section
-						"level": "", // This is only for a parent. This forces an object to 
-						"icon_name": "", // needs to be in the filing system
-						"unique_hex_color": "", // this is the RGB of the line leading to it - ONLY UTELIZED IF IT IS A PARENT
-						"unique_hex_color_child": "" // this will override rgb color of the parent line
-					},
-					{
-						"name": "",
-						"text": {
-							"title": "Sophmore",
-							"subtitle": "",
-							"topic": "",
-							"audience": "",
-							"overview": "",
-							"link": "",
-							"message": "",
-							"email": ""
-						}
-						"parent_name": {
-							"p1": ""
-						},
-						"sibling_name": "",
-						"section": {
-							"name": ""
-						},
-						"level": "",
-						"icon_name": "",
-						"unique_hex_color": "",
-						"unique_hex_color_child": ""
-					}
-				]);
-
-
-
-			*/
 		</script>
 
 		<script type="text/javascript">

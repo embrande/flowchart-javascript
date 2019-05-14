@@ -7,11 +7,11 @@
 		{
 			"name": "", // needs to be unique with underscores
 			"text": {
-				"title": "",
+				"title": "", // Parent uses this as it's label
 				"subtitle": "",
-				"topic": "",
+				"type": "",
 				"audience": "",
-				"overview": "",
+				"overview": "", // Message overview or parent description
 				"link": "", // if need to link the whole box
 				"message": "",
 				"email": "" // url of email
@@ -23,7 +23,7 @@
 			"section": {
 				"name": ""
 			}, // This is how you assign this to different sections. If empty and no parent, it becomes a section. If a parent 1 is listed and this isn't then p_1 becomes the section
-			"level": "", // This is only for a parent. This forces an object to 
+			"level": "", // This is only for a parent - will be ignored if a parent is defined. This forces an object to be on a specific level. Naturally new parents go on a new level
 			"icon_name": "", // needs to be in the filing system
 			"unique_hex_color": "", // this is the RGB of the line leading to it - ONLY UTELIZED IF IT IS A PARENT
 			"unique_hex_color_child": "" // this will override rgb color of the parent line
@@ -31,9 +31,9 @@
 		{
 			"name": "",
 			"text": {
-				"title": "Sophmore",
+				"title": "",
 				"subtitle": "",
-				"topic": "",
+				"type": "",
 				"audience": "",
 				"overview": "",
 				"link": "",
