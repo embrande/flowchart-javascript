@@ -70,7 +70,10 @@ var flowchartDataController = (function(){
 		positioning: {
 			x:0,
 			y:0
-		}
+		},
+		parentStructure: [
+
+		]
 	};
 
 	return {
@@ -79,6 +82,17 @@ var flowchartDataController = (function(){
 		},
 		furthestYPoint: function(){
 
+		},
+		measureNewX: function(){
+
+		},
+		measureNewY: function(){
+
+		},
+		addParent: function(name){
+			// Get X position based on furthest X point
+			// Get Y position based on furthest Y point
+			flowchartData.parentStructure.push({"name": name, "posY": 0, "posX": 0, "children": []});
 		}
 	}
 
@@ -88,11 +102,33 @@ var flowchartDataController = (function(){
 
 var flowchartUIController = (function(){
 
+	var DOMStrings = {
+		"canvasID": "flowchart-stage",
+		"context": "2d"
+	};
+
 	return {
 		newChild: function(parent, position){
 
 		},
-		newParent: function(positioning)
+		newParent: function(positioning){
+
+		},
+		getDOMstrings: function(){
+			return DOMStrings;
+		},
+		getCanvas: function(){
+			var c = document.getElementById(DOMStrings.canvasID),
+				c_graph = c.getContext(DOMStrings.context);
+
+			return {
+				"c": c,
+				"c_graph": c_graph
+			};
+		},
+		addToCanvas: function(obj){
+			// Take the object and add it to the canvas based on type - object should have type / locations / name / etc
+		}
 	}
 
 })();
@@ -103,21 +139,37 @@ var flowchartUIController = (function(){
 
 var flowchartAppController = (function(dCon, UICon){
 
+	// var strings = UICon.getDOMstrings();
+	var canvas;
+
 	var loopData = function(flowchart){
 		flowchart.forEach(function(e){
 			if(e.parent_name.p1 == "" || e.parent_name.p1 == undefined){
 				// Parents
-
+				// Measure new location of parent - store furthest x and y
+				// Add parent to canvas based on type
+				dCon.addParent(e.name);
 			}else{
 				// Children
 			}
 		});
+	};
 
+	var canvasInit = function(){
+		canvas = UICon.getCanvas();
 	}
+
 
 	return {
 		init: function(flowVar){
+			canvasInit();
 			loopData(flowVar);
+		},
+		addParent: function(){
+
+		},
+		addChild: function(){
+
 		}
 	}
 
