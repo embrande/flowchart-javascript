@@ -88,6 +88,13 @@ var flowchartDataController = (function(){
 
 var flowchartUIController = (function(){
 
+	return {
+		newChild: function(parent, position){
+
+		},
+		newParent: function(positioning)
+	}
+
 })();
 
 
@@ -100,6 +107,7 @@ var flowchartAppController = (function(dCon, UICon){
 		flowchart.forEach(function(e){
 			if(e.parent_name.p1 == "" || e.parent_name.p1 == undefined){
 				// Parents
+
 			}else{
 				// Children
 			}
