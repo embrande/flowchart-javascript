@@ -223,6 +223,7 @@
 				addTitle:function(copy){
 					this.canvas_ref.font = "30px BentonSans";
 					this.canvas_ref.fillText(copy, 85, 50);
+					var seeing = this.canvas_ref.measureText(copy).width; // this gets the width of the text
 				}
 			}
 

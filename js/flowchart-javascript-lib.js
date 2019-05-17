@@ -147,7 +147,7 @@ var flowchartAppController = (function(dCon, UICon){
 			if(e.parent_name.p1 == "" || e.parent_name.p1 == undefined){
 				// Parents
 				// Measure new location of parent - store furthest x and y
-				// Add parent to canvas based on type
+				// Add parent to canvas based on sibling
 				dCon.addParent(e.name);
 			}else{
 				// Children
