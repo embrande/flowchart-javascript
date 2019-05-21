@@ -124,7 +124,7 @@ var flowchartUIController = (function(){
 			};
 		},
 		addParent: function(canvas, obj){
-			var img = obj.img;
+			var img = obj.icon;
 
 			var imgAdded = (function(canvas, imgUrl, posY, posX){
 				var img = new Image();
@@ -179,11 +179,10 @@ var flowchartAppController = (function(dCon, UICon){
 	var loopData = function(flowchart){
 		flowchart.forEach(function(e){
 			if(e.parent_name.p1 == "" || e.parent_name.p1 == undefined){
-				// Parents
-				// Measure new location of parent - store furthest x and y
-				// Add parent to canvas based on sibling
-				// objToAdd = dCon.pObj(e.name);
-				UICon.addParent(canvas, e.icon);
+				// put into data based on siblings and parent - return x, y position
+				// put image, title, and text onto canvas - return height and width
+				// put new height and width into data
+				UICon.addParent(canvas, e);
 			}else{
 				// Children
 			}
