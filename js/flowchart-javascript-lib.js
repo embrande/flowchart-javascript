@@ -24,7 +24,7 @@
 				"name": ""
 			}, // This is how you assign this to different sections. If empty and no parent, it becomes a section. If a parent 1 is listed and this isn't then p_1 becomes the section
 			"level": "", // This is only for a parent - will be ignored if a parent is defined. This forces an object to be on a specific level. Naturally new parents go on a new level
-			"icon_name": "", // needs to be in the filing system
+			"icon": "", // needs to be in the filing system
 			"unique_hex_color": "", // this is the RGB of the line leading to it - ONLY UTELIZED IF IT IS A PARENT
 			"unique_hex_color_child": "" // this will override rgb color of the parent line
 		},
@@ -48,7 +48,7 @@
 				"name": ""
 			},
 			"level": "",
-			"icon_name": "",
+			"icon": "",
 			"unique_hex_color": "",
 			"unique_hex_color_child": ""
 		}
@@ -89,10 +89,12 @@ var flowchartDataController = (function(){
 		measureNewY: function(){
 
 		},
-		addParent: function(name){
+		pObj: function(name){
 			// Get X position based on furthest X point
 			// Get Y position based on furthest Y point
-			flowchartData.parentStructure.push({"name": name, "posY": 0, "posX": 0, "children": []});
+			var currentFlowItem = {"name": name, "posY": 0, "posX": 0, "children": []};
+			flowchartData.parentStructure.push(currentFlowItem);
+			return currentFlowItem;
 		}
 	}
 
@@ -104,16 +106,11 @@ var flowchartUIController = (function(){
 
 	var DOMStrings = {
 		"canvasID": "flowchart-stage",
-		"context": "2d"
+		"context": "2d",
+		"parentSize": 75
 	};
 
 	return {
-		newChild: function(parent, position){
-
-		},
-		newParent: function(positioning){
-
-		},
 		getDOMstrings: function(){
 			return DOMStrings;
 		},
@@ -126,8 +123,45 @@ var flowchartUIController = (function(){
 				"c_graph": c_graph
 			};
 		},
-		addToCanvas: function(obj){
+		addParent: function(canvas, obj){
+			var img = obj.img;
+
+			var imgAdded = (function(canvas, imgUrl, posY, posX){
+				var img = new Image();
+					img.src = imgUrl;
+					img.canvas_ref = canvas;
+				img.onload = function(e){
+					/***
+
+						Replace below with x and y positions once I have that in the OBJ
+
+					****/
+					canvas.drawImage(img, 10, 0, DOMStrings.parentSize, DOMStrings.parentSize);
+				}
+				
+			})(canvas, img);
+
+		},
+		addChild: function(canvas, obj, parent){
+
+		},
+		addToCanvas: function(canvas, obj, type){
 			// Take the object and add it to the canvas based on type - object should have type / locations / name / etc
+			
+
+			var addText = function(canvas_ref, type){
+				if(type == 'parent'){
+					canvas_ref.font = "30px BentonSans";
+					canvas_ref.fillText(copy, 85, 50);
+					var text_width = this.canvas_ref.measureText(copy).width;
+				}else{
+					canvas_ref.font = "22px BentonSans";
+					canvas_ref.fillText(copy, 85, 50);
+					var text_width = canvas_ref.measureText(copy).width;
+				}
+				return text_width;
+			};
+
 		}
 	}
 
@@ -140,7 +174,7 @@ var flowchartUIController = (function(){
 var flowchartAppController = (function(dCon, UICon){
 
 	// var strings = UICon.getDOMstrings();
-	var canvas;
+	var canvas, objToAdd;
 
 	var loopData = function(flowchart){
 		flowchart.forEach(function(e){
@@ -148,7 +182,8 @@ var flowchartAppController = (function(dCon, UICon){
 				// Parents
 				// Measure new location of parent - store furthest x and y
 				// Add parent to canvas based on sibling
-				dCon.addParent(e.name);
+				// objToAdd = dCon.pObj(e.name);
+				UICon.addParent(canvas, e.icon);
 			}else{
 				// Children
 			}
@@ -156,7 +191,7 @@ var flowchartAppController = (function(dCon, UICon){
 	};
 
 	var canvasInit = function(){
-		canvas = UICon.getCanvas();
+		canvas = UICon.getCanvas().c_graph;
 	}
 
 
