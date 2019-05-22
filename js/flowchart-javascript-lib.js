@@ -81,9 +81,28 @@ var flowchartDataController = (function(){
 	}
 
 	FlowchartArrayMember.prototype = {
-
-
-
+		parentData: function(obj){
+			// If new tier parent get furthest Y get X position of its parent
+			// If sibling parent get furthest X of it's sibling (parent) get Y position of sibling
+			// Return its X and Y position
+			if(this.parent !== ""){
+				// -> If is a parent
+				if(this.sibling_name !== ""){
+					// -> If it is a parent and has a sibling
+					// Make sure sibling exist
+						// If not console an error of missing sibling name
+					// Get Y of it's sibling
+					// Get furthest x of it's sibling' child
+				}else{
+					// If it is a parent with no sibling
+					// Get furthest Y position
+					// Y position is 0
+				}
+			}else{
+				// -> Not a parent because it has a parent
+			}
+			
+		}
 	};
 
 	var flowchartData = {
@@ -97,36 +116,21 @@ var flowchartDataController = (function(){
 	};
 
 	return {
-		furthestXPoint: function(){
+		furthestXPoint: function(parentName){
+			// Loop through children of parentName and return furthest X
+		},
+		furthestYPoint: function(siblingName){
 
 		},
-		furthestYPoint: function(){
-
+		measureNewX: function(X){
+			// Measuring the current X with new values
 		},
-		measureNewX: function(){
-
-		},
-		measureNewY: function(){
+		measureNewY: function(Y){
 
 		},
 		createFlowItem: function(obj){
 			var flowItemObject = new FlowchartArrayMember(obj);
 			return flowItemObject;
-		},
-		parentData: function(obj){
-			// If new tier parent get furthest Y get X position of its parent
-			// If sibling parent get furthest X of it's sibling (parent) get Y position of sibling
-			// Return its X and Y position
-			var flowItem = this.createFlowItem(obj);
-
-			if(flowItem.sibling_name !== ""){
-				// If it is a parent and has a sibling
-				// Make sure sibling exist
-				// Get Y of it's sibling
-				// Get furthest x of it's sibling' child
-			}else{
-				// If it is a parent with no sibling
-			}
 		},
 		pObj: function(name){
 			// Get X position based on furthest X point
@@ -221,7 +225,7 @@ var flowchartAppController = (function(dCon, UICon){
 				// put into data based on siblings and parent - return x, y position
 				// put image, title, and text onto canvas - return height and width
 				// put new height and width into data
-				dCon.parentData(e);
+				dCon.createFlowItem(e);
 				UICon.addParent(canvas, e);
 			}else{
 				// Children
