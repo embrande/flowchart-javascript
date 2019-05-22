@@ -62,8 +62,21 @@
 
 var flowchartDataController = (function(){
 
-	var FlowchartArrayMember = function(){
-		// Define based on a parent system
+	var FlowchartArrayMember = function(obj){
+		this.name = obj.name;
+		this.icon = obj.icon;
+		this.level = obj.level;
+		this.parent = obj.parent_name;
+		this.section = obj.section;
+		this.sibling_name = obj.sibling_name;
+		this.title = obj.text.title;
+		this.subtitle = obj.text.title;
+		this.audience = obj.text.audience;
+		this.email = obj.text.email;
+		this.link = obj.text.link;
+		this.message = obj.text.message;
+		this.overview = obj.text.message;
+		this.type = obj.text.type;
 	}
 
 	var flowchartData = {
@@ -88,6 +101,15 @@ var flowchartDataController = (function(){
 		},
 		measureNewY: function(){
 
+		},
+		createFlowItem: function(obj){
+			var flowItemObject = new FlowchartArrayMember(obj);
+		},
+		parentData: function(obj){
+			// If new tier parent get furthest Y get X position of its parent
+			// If sibling parent get furthest X of it's sibling (parent) get Y position of sibling
+			// Return its X and Y position
+			this.createFlowItem(obj);
 		},
 		pObj: function(name){
 			// Get X position based on furthest X point
@@ -182,6 +204,7 @@ var flowchartAppController = (function(dCon, UICon){
 				// put into data based on siblings and parent - return x, y position
 				// put image, title, and text onto canvas - return height and width
 				// put new height and width into data
+				dCon.parentData(e);
 				UICon.addParent(canvas, e);
 			}else{
 				// Children
