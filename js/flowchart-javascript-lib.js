@@ -79,6 +79,8 @@ var flowchartDataController = (function(){
 		this.type = obj.text.type;
 		this.unique_hex_color = obj.unique_hex_color;
 		this.unique_hex_color_child = obj.unique_hex_color_child;
+		this.img_width = obj.IMGWidth;
+		this.text_width = obj.TextWidth;
 
 		this.dataFlow();
 	}
@@ -104,22 +106,16 @@ var flowchartDataController = (function(){
 						// If it is a parent with no sibling
 						// Get furthest X position
 						// Y position is 0
+
 					}
 				}else{
 					// -> Child element
 					// -> Not a parent because it has a parent
 					// Get furthest Y position of Parent
 					// Get X Position of parent
-					var parent = flowchartData.parentStructure[this.parent];
 				}
 			}else{
-				flowItemReturn = {
-					"name": this.name,
-					"posY": 0,
-					"posX": 0,
-					"children": []
-				};
-				flowchartData.parentStructure.push(flowItemReturn);
+				
 			}
 
 			
@@ -237,20 +233,21 @@ var flowchartUIController = (function(){
 			};
 
 		},
-		textWidth: function(canvas_ref, obj, type){
+		textWidth: function(canvas_ref, txt, type){
+			var copy = txt;
 			if(type == 'parent'){
 				canvas_ref.font = DOMStrings.parent_font;
-				var text_width = this.canvas_ref.measureText(obj.text.title).width;
+				var text_width = canvas_ref.measureText(copy).width;
 			}else{
 				canvas_ref.font = DOMStrings.parent_font;
-				var text_width = this.canvas_ref.measureText(obj.text.title).width;
+				var text_width = canvas_ref.measureText(copy).width;
 			}
 			return text_width;
 		},
 		objSize: function(canvas_ref, obj, type){
 			var objTextWidth, objImageWidth;
 			
-			obj.TextWidth = this.textWidth(canvas_ref, obj.title, type);
+			obj.TextWidth = this.textWidth(canvas_ref, obj.text.title, type);
 			obj.IMGWidth = DOMStrings.parentSize;
 
 			return obj;
@@ -271,9 +268,8 @@ var flowchartAppController = (function(dCon, UICon){
 	var loopData = function(flowchart){
 		flowchart.forEach(function(e){
 			if(e.parent_name == "" || e.parent_name == undefined){
-				console.log(e.text.title);
+				// console.log(e.text.title);
 				objToAdd = UICon.objSize(canvas, e, "parent");
-				console.log(e.title);
 				dCon.createFlowItem(objToAdd);
 			}else{
 				// Children
