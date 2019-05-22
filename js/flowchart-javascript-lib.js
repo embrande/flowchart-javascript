@@ -3,6 +3,7 @@
 /*
 
 	//As of now, the parent needs to be before the children
+	// As of now, the first sibling needs to be before the second sibling
 	flowchart([
 		{
 			"name": "", // needs to be unique with underscores
@@ -79,6 +80,12 @@ var flowchartDataController = (function(){
 		this.type = obj.text.type;
 	}
 
+	FlowchartArrayMember.prototype = {
+
+
+
+	};
+
 	var flowchartData = {
 		positioning: {
 			x:0,
@@ -104,12 +111,22 @@ var flowchartDataController = (function(){
 		},
 		createFlowItem: function(obj){
 			var flowItemObject = new FlowchartArrayMember(obj);
+			return flowItemObject;
 		},
 		parentData: function(obj){
 			// If new tier parent get furthest Y get X position of its parent
 			// If sibling parent get furthest X of it's sibling (parent) get Y position of sibling
 			// Return its X and Y position
-			this.createFlowItem(obj);
+			var flowItem = this.createFlowItem(obj);
+
+			if(flowItem.sibling_name !== ""){
+				// If it is a parent and has a sibling
+				// Make sure sibling exist
+				// Get Y of it's sibling
+				// Get furthest x of it's sibling' child
+			}else{
+				// If it is a parent with no sibling
+			}
 		},
 		pObj: function(name){
 			// Get X position based on furthest X point
