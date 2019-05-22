@@ -78,10 +78,12 @@ var flowchartDataController = (function(){
 		this.message = obj.text.message;
 		this.overview = obj.text.message;
 		this.type = obj.text.type;
+		this.unique_hex_color = obj.unique_hex_color;
+		this.unique_hex_color_child = obj.unique_hex_color_child;
 	}
 
 	FlowchartArrayMember.prototype = {
-		parentData: function(obj){
+		dataFlow: function(){
 			// If new tier parent get furthest Y get X position of its parent
 			// If sibling parent get furthest X of it's sibling (parent) get Y position of sibling
 			// Return its X and Y position
@@ -102,7 +104,19 @@ var flowchartDataController = (function(){
 				// -> Not a parent because it has a parent
 			}
 			
-		}
+		},
+		furthestXPoint: function(parentName){
+			// Loop through children of parentName and return furthest X
+		},
+		furthestYPoint: function(siblingName){
+
+		},
+		measureNewX: function(X){
+			// Measuring the current X with new values
+		},
+		measureNewY: function(Y){
+
+		},
 	};
 
 	var flowchartData = {
@@ -116,18 +130,6 @@ var flowchartDataController = (function(){
 	};
 
 	return {
-		furthestXPoint: function(parentName){
-			// Loop through children of parentName and return furthest X
-		},
-		furthestYPoint: function(siblingName){
-
-		},
-		measureNewX: function(X){
-			// Measuring the current X with new values
-		},
-		measureNewY: function(Y){
-
-		},
 		createFlowItem: function(obj){
 			var flowItemObject = new FlowchartArrayMember(obj);
 			return flowItemObject;
