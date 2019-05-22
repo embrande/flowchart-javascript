@@ -41,9 +41,7 @@
 				"message": "",
 				"email": ""
 			},
-			"parent_name": {
-				"p1": ""
-			},
+			"parent_name": "",
 			"sibling_name": "",
 			"section": {
 				"name": ""
@@ -63,7 +61,8 @@
 
 var flowchartDataController = (function(){
 
-	var FlowchartArrayMember = function(obj){
+	var FlowchartArrayMember = function(obj, io){
+		this.firstOrNot = io;
 		this.name = obj.name;
 		this.icon = obj.icon;
 		this.level = obj.level;
@@ -80,6 +79,8 @@ var flowchartDataController = (function(){
 		this.type = obj.text.type;
 		this.unique_hex_color = obj.unique_hex_color;
 		this.unique_hex_color_child = obj.unique_hex_color_child;
+
+		this.dataFlow();
 	}
 
 	FlowchartArrayMember.prototype = {
@@ -87,32 +88,51 @@ var flowchartDataController = (function(){
 			// If new tier parent get furthest Y get X position of its parent
 			// If sibling parent get furthest X of it's sibling (parent) get Y position of sibling
 			// Return its X and Y position
-			if(this.parent !== ""){
-				// -> If is a parent
-				if(this.sibling_name !== ""){
-					// -> If it is a parent and has a sibling
-					// Make sure sibling exist
-						// If not console an error of missing sibling name
-					// Get Y of it's sibling
-					// Get furthest x of it's sibling' child
+
+			var flowItemReturn;
+
+			if(this.firstOrNot > 0){
+				if(this.parent == ""){
+					// -> If is a parent
+					if(this.sibling_name !== ""){
+						// -> If it is a parent and has a sibling
+						// Make sure sibling exist
+							// If not console an error of missing sibling name
+						// Get Y of it's sibling
+						// Get furthest x of it's sibling' child
+					}else{
+						// If it is a parent with no sibling
+						// Get furthest X position
+						// Y position is 0
+					}
 				}else{
-					// If it is a parent with no sibling
-					// Get furthest Y position
-					// Y position is 0
+					// -> Child element
+					// -> Not a parent because it has a parent
+					// Get furthest Y position of Parent
+					// Get X Position of parent
+					var parent = flowchartData.parentStructure[this.parent];
 				}
 			}else{
-				// -> Not a parent because it has a parent
+				flowItemReturn = {
+					"name": this.name,
+					"posY": 0,
+					"posX": 0,
+					"children": []
+				};
+				flowchartData.parentStructure.push(flowItemReturn);
 			}
+
+			
 			
 		},
-		furthestXPoint: function(parentName){
-			// Loop through children of parentName and return furthest X
+		furthestXPoint: function(siblingName){
+			
 		},
-		furthestYPoint: function(siblingName){
+		furthestYPoint: function(parentName){
 
 		},
 		measureNewX: function(X){
-			// Measuring the current X with new values
+			
 		},
 		measureNewY: function(Y){
 
@@ -131,7 +151,14 @@ var flowchartDataController = (function(){
 
 	return {
 		createFlowItem: function(obj){
-			var flowItemObject = new FlowchartArrayMember(obj);
+			var flowItemObject;
+
+			if(flowchartData.parentStructure.length > 0){
+				flowItemObject = new FlowchartArrayMember(obj, 1);
+			}else{
+				flowItemObject = new FlowchartArrayMember(obj, 0);
+			}
+
 			return flowItemObject;
 		},
 		pObj: function(name){
@@ -152,7 +179,9 @@ var flowchartUIController = (function(){
 	var DOMStrings = {
 		"canvasID": "flowchart-stage",
 		"context": "2d",
-		"parentSize": 75
+		"parentSize": 75,
+		"parent_font": "30px BentonSans",
+		"child_font": "22px BentonSans"
 	};
 
 	return {
@@ -195,18 +224,36 @@ var flowchartUIController = (function(){
 			
 
 			var addText = function(canvas_ref, type){
-				if(type == 'parent'){
-					canvas_ref.font = "30px BentonSans";
-					canvas_ref.fillText(copy, 85, 50);
-					var text_width = this.canvas_ref.measureText(copy).width;
-				}else{
-					canvas_ref.font = "22px BentonSans";
-					canvas_ref.fillText(copy, 85, 50);
-					var text_width = canvas_ref.measureText(copy).width;
-				}
-				return text_width;
+				// if(type == 'parent'){
+				// 	canvas_ref.font = "30px BentonSans";
+				// 	canvas_ref.fillText(copy, 85, 50);
+				// 	var text_width = this.canvas_ref.measureText(copy).width;
+				// }else{
+				// 	canvas_ref.font = "22px BentonSans";
+				// 	canvas_ref.fillText(copy, 85, 50);
+				// 	var text_width = canvas_ref.measureText(copy).width;
+				// }
+				// return text_width;
 			};
 
+		},
+		textWidth: function(canvas_ref, obj, type){
+			if(type == 'parent'){
+				canvas_ref.font = DOMStrings.parent_font;
+				var text_width = this.canvas_ref.measureText(obj.text.title).width;
+			}else{
+				canvas_ref.font = DOMStrings.parent_font;
+				var text_width = this.canvas_ref.measureText(obj.text.title).width;
+			}
+			return text_width;
+		},
+		objSize: function(canvas_ref, obj, type){
+			var objTextWidth, objImageWidth;
+			
+			obj.TextWidth = this.textWidth(canvas_ref, obj.title, type);
+			obj.IMGWidth = DOMStrings.parentSize;
+
+			return obj;
 		}
 	}
 
@@ -223,12 +270,11 @@ var flowchartAppController = (function(dCon, UICon){
 
 	var loopData = function(flowchart){
 		flowchart.forEach(function(e){
-			if(e.parent_name.p1 == "" || e.parent_name.p1 == undefined){
-				// put into data based on siblings and parent - return x, y position
-				// put image, title, and text onto canvas - return height and width
-				// put new height and width into data
-				dCon.createFlowItem(e);
-				UICon.addParent(canvas, e);
+			if(e.parent_name == "" || e.parent_name == undefined){
+				console.log(e.text.title);
+				objToAdd = UICon.objSize(canvas, e, "parent");
+				console.log(e.title);
+				dCon.createFlowItem(objToAdd);
 			}else{
 				// Children
 			}
