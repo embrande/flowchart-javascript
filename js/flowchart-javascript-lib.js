@@ -117,22 +117,7 @@ var flowchartDataController = (function(){
 			}else{
 				
 			}
-
-			
-			
-		},
-		furthestXPoint: function(siblingName){
-			
-		},
-		furthestYPoint: function(parentName){
-
-		},
-		measureNewX: function(X){
-			
-		},
-		measureNewY: function(Y){
-
-		},
+		}
 	};
 
 	var flowchartData = {
@@ -142,27 +127,46 @@ var flowchartDataController = (function(){
 		},
 		parentStructure: [
 
-		]
+		],
+		objs: []
 	};
 
 	return {
 		createFlowItem: function(obj){
-			var flowItemObject;
+			var flowItemObject, parentStructureItems;
 
 			if(flowchartData.parentStructure.length > 0){
 				flowItemObject = new FlowchartArrayMember(obj, 1);
+				parentStructureItems = this.pObj(flowItemObject.name, "second");
 			}else{
 				flowItemObject = new FlowchartArrayMember(obj, 0);
+				parentStructureItems = this.pObj(flowItemObject.name, "first");
 			}
+
+			flowchartData.parentStructure.push(parentStructureItems);
+			flowchartData.objs.push(flowItemObject);
+
+			console.log(flowchartData.parentStructure);
 
 			return flowItemObject;
 		},
-		pObj: function(name){
+		pObj: function(name, type){
 			// Get X position based on furthest X point
 			// Get Y position based on furthest Y point
-			var currentFlowItem = {"name": name, "posY": 0, "posX": 0, "children": []};
-			flowchartData.parentStructure.push(currentFlowItem);
+			if(type == "first"){
+				var currentFlowItem = {
+					"name": name,
+					"posY": 0, 
+					"posX": 0, 
+					"furthestY": -1, 
+					"furthestX": -1, 
+					"children": []
+				};
+			}
 			return currentFlowItem;
+		},
+		getDrawing: function(){
+
 		}
 	}
 
@@ -277,15 +281,21 @@ var flowchartAppController = (function(dCon, UICon){
 		});
 	};
 
+	var drawItems = function(){
+		var mapItems = dCon.getDrawing();
+		// Map items and draw to canvas
+	};
+
 	var canvasInit = function(){
 		canvas = UICon.getCanvas().c_graph;
-	}
+	};
 
 
 	return {
 		init: function(flowVar){
 			canvasInit();
 			loopData(flowVar);
+			drawItems();
 		},
 		addParent: function(){
 

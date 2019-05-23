@@ -209,43 +209,43 @@
 			"use strict";
 			
 
-			var c = document.getElementById("flowchart-stage"),
-				c_graph = c.getContext("2d");
+			// var c = document.getElementById("flowchart-stage"),
+			// 	c_graph = c.getContext("2d");
 
-			c.parent = c.parentNode;
-			c.width = c.parentNode.offsetWidth;
-			c.height = c.parentNode.offsetHeight;
+			// c.parent = c.parentNode;
+			// c.width = c.parentNode.offsetWidth;
+			// c.height = c.parentNode.offsetHeight;
 			
-			var CanvasAdd = function(canvas){
-				this.canvas_ref = canvas;
-			}
-			CanvasAdd.prototype = {
-				addImage: function(imgUrl){
-					var img = new Image();
-						img.src = imgUrl;
-						img.canvas_ref = this.canvas_ref;
-					img.onload = function(){
-						img.canvas_ref.drawImage(img, 10, 0, 75, 75);
-					}
-				},
-				addTitle:function(copy){
-					this.canvas_ref.font = "30px BentonSans";
-					this.canvas_ref.fillText(copy, 85, 50);
-					var seeing = this.canvas_ref.measureText(copy).width; // this gets the width of the text
-					console.log(seeing);
-				}
-			}
+			// var CanvasAdd = function(canvas){
+			// 	this.canvas_ref = canvas;
+			// }
+			// CanvasAdd.prototype = {
+			// 	addImage: function(imgUrl){
+			// 		var img = new Image();
+			// 			img.src = imgUrl;
+			// 			img.canvas_ref = this.canvas_ref;
+			// 		img.onload = function(){
+			// 			img.canvas_ref.drawImage(img, 10, 0, 75, 75);
+			// 		}
+			// 	},
+			// 	addTitle:function(copy){
+			// 		this.canvas_ref.font = "30px BentonSans";
+			// 		this.canvas_ref.fillText(copy, 85, 50);
+			// 		var seeing = this.canvas_ref.measureText(copy).width; // this gets the width of the text
+			// 		console.log(seeing);
+			// 	}
+			// }
 
-			var add_to_canvas = new CanvasAdd(c_graph);
-			add_to_canvas.addImage("img/student.svg");
-			add_to_canvas.addTitle("Frehshmen");
+			// var add_to_canvas = new CanvasAdd(c_graph);
+			// add_to_canvas.addImage("img/student.svg");
+			// add_to_canvas.addTitle("Frehshmen");
 
 
-			c_graph.beginPath();
-			c_graph.moveTo(90, 70);
-			c_graph.lineTo(400, 70);
-			c_graph.stroke();
-			c_graph.closePath();
+			// c_graph.beginPath();
+			// c_graph.moveTo(90, 70);
+			// c_graph.lineTo(400, 70);
+			// c_graph.stroke();
+			// c_graph.closePath();
 
 
 		</script>	
