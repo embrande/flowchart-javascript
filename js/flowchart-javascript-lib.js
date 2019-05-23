@@ -98,15 +98,12 @@ var flowchartDataController = (function(){
 					// -> If is a parent
 					if(this.sibling_name !== ""){
 						// -> If it is a parent and has a sibling
-						// Make sure sibling exist
-							// If not console an error of missing sibling name
 						// Get Y of it's sibling
 						// Get furthest x of it's sibling' child
 					}else{
 						// If it is a parent with no sibling
 						// Get furthest X position
 						// Y position is 0
-
 					}
 				}else{
 					// -> Child element
@@ -162,6 +159,8 @@ var flowchartDataController = (function(){
 					"furthestX": -1, 
 					"children": []
 				};
+			}else{
+				// items after the first item
 			}
 			return currentFlowItem;
 		},
