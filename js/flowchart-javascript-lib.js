@@ -20,7 +20,7 @@
 			"parent_name": {
 				"p_1": "" //needs to be the unique name of the parent icon - if not found will display as it's own landmark under the section it's labelled under - theoretically can be infinitel ist
 			}, // what it will be dependant on
-			"sibling_name": "", // Parent uses this to draw a line with a sibling
+			"sibling_name": "", // Parent uses this to draw a line with a sibling - children siblings unavailable at this time
 			"section": {
 				"name": ""
 			}, // This is how you assign this to different sections. If empty and no parent, it becomes a section. If a parent 1 is listed and this isn't then p_1 becomes the section
@@ -81,48 +81,23 @@ var flowchartDataController = (function(){
 		this.unique_hex_color_child = obj.unique_hex_color_child;
 		this.img_width = obj.IMGWidth;
 		this.text_width = obj.TextWidth;
+		this.X;
+		this.Y;
 	}
 
 	FlowchartArrayMember.prototype = {
-		dataFlow: function(){
-			// If new tier parent get furthest Y get X position of its parent
-			// If sibling parent get furthest X of it's sibling (parent) get Y position of sibling
-			// Return its X and Y position
-
-			var flowItemReturn;
-
-			if(this.firstOrNot > 0){
-				if(this.parent == ""){
-					// -> If is a parent
-					if(this.sibling_name !== ""){
-						// -> If it is a parent and has a sibling
-						// Get Y of it's sibling
-						// Get furthest x of it's sibling' child
-					}else{
-						// If it is a parent with no sibling
-						// Get furthest X position
-						// Y position is 0
-					}
-				}else{
-					// -> Child element
-					// -> Not a parent because it has a parent
-					// Get furthest Y position of Parent
-					// Get X Position of parent
-				}
-			}else{
-				
-			}
+		coordinates: function(x,y){
+			this.X = x;
+			this.Y = y;
 		}
 	};
 
 	var flowchartData = {
-		positioning: {
-			x:0,
-			y:0
-		},
-		parentStructure: [
-
-		],
+		distanceX: 300,
+		distanceY: 300,
+		distanceChildY: 100,
+		globalY: 0,
+		parentStructure: [],
 		objects: []
 	};
 
@@ -130,6 +105,8 @@ var flowchartDataController = (function(){
 		createFlowItem: function(obj){
 			var flowItemObject;
 
+			// if the object isn't empty
+				//create a new array object
 			if(flowchartData.objects.length > 0){
 				flowItemObject = new FlowchartArrayMember(obj, 1);
 			}else{
@@ -141,39 +118,89 @@ var flowchartDataController = (function(){
 			return flowItemObject;
 		},
 		parentStructure: function(){
-			var that = this;
+			var that = this,
+				objStructure;
+
+			//run through each object in the data and reassign their coordinates
 			flowchartData.objects.forEach(function(e){
 				if(e.parent !== "" && e.parent !== undefined){
 					//child level
-					that.childObj();
+					// that.childObj(e);
 				}else{
-					that.parentObj();
+					if(e.sibling_name !== ""){
+						// parent sibling
+					}else{
+						objStructure = that.parentObj(e);
+						that.objectManipulate(objStructure);
+					}
 				}
 			});
-		},
-		parentObj: function(){
-			// Get X position based on furthest X point
-			// Get Y position based on furthest Y point
-			console.log("parentObj");
-		},
-		childObj: function(){
-			console.log("childObj");
-		},
-		structureObj: function(){
-			var currentFlowItem;
 
-			currentFlowItem = {
-				
+			console.log(flowchartData);
+		},
+		addToParentStructure: function(name, x, y){
+			// take in name and add it to the flowchardata's parent structure
+			// this is so we can begin incrementing furthest x and y values to store in the objects
+
+			flowchartData.parentStructure[name] = {
+				"y": y,
+				"x": x
 			};
-
-			return currentFlowItem;
 		},
-		getDrawing: function(){
+		parentObj: function(obj){
+			var x, y;
 
+			y = this.getXY(null, "y");
+			x = 0;
+
+			this.increaseGlobalY(flowchartData.distanceY);
+
+			return {
+				name: obj,
+				x: x,
+				y: y
+			}
+			
+		},
+		childObj: function(obj){
+			var x, 
+				y, 
+				parentName = obj.parent;
+
+			y = this.getXY(parentName, "y") + flowchartData.distanceChildY;
+			x = this.getXY(parentName, "x");
+
+			this.increaseGlobalY(flowchartData.distanceChildY);
+
+			this.addToParentStructure(parentName, x, y);
+			obj.coordinates(x,y);
+		},
+		objectManipulate: function(obj){
+			var x = obj.x,
+				y = obj.y;
+
+			this.addToParentStructure(obj.name.parent, x, y);
+			obj.name.coordinates(x, y);
+		},
+		getXY: function(parentName, xOry){
+			var direction = xOry;
+			var previous = parentName;
+
+			if(previous == null){
+				// x positioning based on 
+				return flowchartData.globalY;
+			}else{
+				// new parent x positioning by the global direction
+				return flowchartData.parentStructure[previous][direction];
+			}
+		},
+		increaseGlobalY: function(d){
+			var fData = flowchartData;
+			fData.globalY = fData.globalY + d;
 		},
 		getObjects: function(){
 			return flowchartData.objects;
-		}
+		},
 	}
 
 })();
@@ -298,8 +325,7 @@ var flowchartAppController = (function(dCon, UICon){
 	};
 
 	var drawItems = function(){
-		var mapItems = dCon.getDrawing();
-		// Map items and draw to canvas
+		// get objects - draw to canvas
 	};
 
 	var canvasInit = function(){
