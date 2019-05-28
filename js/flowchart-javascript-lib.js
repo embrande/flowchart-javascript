@@ -81,8 +81,6 @@ var flowchartDataController = (function(){
 		this.unique_hex_color_child = obj.unique_hex_color_child;
 		this.img_width = obj.IMGWidth;
 		this.text_width = obj.TextWidth;
-
-		this.dataFlow();
 	}
 
 	FlowchartArrayMember.prototype = {
@@ -125,47 +123,56 @@ var flowchartDataController = (function(){
 		parentStructure: [
 
 		],
-		objs: []
+		objects: []
 	};
 
 	return {
 		createFlowItem: function(obj){
-			var flowItemObject, parentStructureItems;
+			var flowItemObject;
 
-			if(flowchartData.parentStructure.length > 0){
+			if(flowchartData.objects.length > 0){
 				flowItemObject = new FlowchartArrayMember(obj, 1);
-				parentStructureItems = this.pObj(flowItemObject.name, "second");
 			}else{
 				flowItemObject = new FlowchartArrayMember(obj, 0);
-				parentStructureItems = this.pObj(flowItemObject.name, "first");
 			}
 
-			flowchartData.parentStructure.push(parentStructureItems);
-			flowchartData.objs.push(flowItemObject);
-
-			console.log(flowchartData.parentStructure);
+			flowchartData.objects.push(flowItemObject);
 
 			return flowItemObject;
 		},
-		pObj: function(name, type){
+		parentStructure: function(){
+			var that = this;
+			flowchartData.objects.forEach(function(e){
+				if(e.parent !== "" && e.parent !== undefined){
+					//child level
+					that.childObj();
+				}else{
+					that.parentObj();
+				}
+			});
+		},
+		parentObj: function(){
 			// Get X position based on furthest X point
 			// Get Y position based on furthest Y point
-			if(type == "first"){
-				var currentFlowItem = {
-					"name": name,
-					"posY": 0, 
-					"posX": 0, 
-					"furthestY": -1, 
-					"furthestX": -1, 
-					"children": []
-				};
-			}else{
-				// items after the first item
-			}
+			console.log("parentObj");
+		},
+		childObj: function(){
+			console.log("childObj");
+		},
+		structureObj: function(){
+			var currentFlowItem;
+
+			currentFlowItem = {
+				
+			};
+
 			return currentFlowItem;
 		},
 		getDrawing: function(){
 
+		},
+		getObjects: function(){
+			return flowchartData.objects;
 		}
 	}
 
@@ -266,18 +273,28 @@ var flowchartUIController = (function(){
 var flowchartAppController = (function(dCon, UICon){
 
 	// var strings = UICon.getDOMstrings();
-	var canvas, objToAdd;
+	var canvas, objectsToAdd;
 
 	var loopData = function(flowchart){
 		flowchart.forEach(function(e){
 			if(e.parent_name == "" || e.parent_name == undefined){
 				// console.log(e.text.title);
-				objToAdd = UICon.objSize(canvas, e, "parent");
-				dCon.createFlowItem(objToAdd);
+				//get text or image size - distinguish type for larger text
+				objectsToAdd = UICon.objSize(canvas, e, "parent");
+				//create flow item - add to object
+				dCon.createFlowItem(objectsToAdd);
 			}else{
 				// Children
+				//get text or image size - distinguiush type for larger text
+				objectsToAdd = UICon.objSize(canvas, e, "child");
+				//create flow item - add to object
+				dCon.createFlowItem(objectsToAdd);
 			}
 		});
+	};
+
+	var parentStructure = function(){
+		dCon.parentStructure();
 	};
 
 	var drawItems = function(){
@@ -294,6 +311,7 @@ var flowchartAppController = (function(dCon, UICon){
 		init: function(flowVar){
 			canvasInit();
 			loopData(flowVar);
+			parentStructure();
 			drawItems();
 		},
 		addParent: function(){
