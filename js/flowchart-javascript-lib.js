@@ -187,8 +187,8 @@ var flowchartDataController = (function(){
 			this.addToParentStructure(obj.name, x, y);
 			obj.obj.coordinates(x, y);
 		},
-		getXY: function(parentName, xOry){
-			var direction = xOry;
+		getXY: function(parentName, dir){
+			var direction = dir;
 			var previous = parentName;
 
 			if(previous == null){
