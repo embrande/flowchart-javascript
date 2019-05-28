@@ -136,8 +136,6 @@ var flowchartDataController = (function(){
 					}
 				}
 			});
-
-			console.log(flowchartData);
 		},
 		addToParentStructure: function(name, x, y){
 			// take in name and add it to the flowchardata's parent structure
