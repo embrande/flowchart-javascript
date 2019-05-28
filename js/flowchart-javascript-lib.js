@@ -125,7 +125,8 @@ var flowchartDataController = (function(){
 			flowchartData.objects.forEach(function(e){
 				if(e.parent !== "" && e.parent !== undefined){
 					//child level
-					// that.childObj(e);
+					objStructure = that.childObj(e);
+					that.objectManipulate(objStructure);
 				}else{
 					if(e.sibling_name !== ""){
 						// parent sibling
@@ -156,7 +157,8 @@ var flowchartDataController = (function(){
 			this.increaseGlobalY(flowchartData.distanceY);
 
 			return {
-				name: obj,
+				obj: obj,
+				name: obj.name,
 				x: x,
 				y: y
 			}
@@ -172,15 +174,20 @@ var flowchartDataController = (function(){
 
 			this.increaseGlobalY(flowchartData.distanceChildY);
 
-			this.addToParentStructure(parentName, x, y);
-			obj.coordinates(x,y);
+			return {
+				obj: obj,
+				name: parentName,
+				x: x,
+				y: y
+			}
+
 		},
 		objectManipulate: function(obj){
 			var x = obj.x,
 				y = obj.y;
 
-			this.addToParentStructure(obj.name.parent, x, y);
-			obj.name.coordinates(x, y);
+			this.addToParentStructure(obj.name, x, y);
+			obj.obj.coordinates(x, y);
 		},
 		getXY: function(parentName, xOry){
 			var direction = xOry;
