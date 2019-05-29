@@ -277,7 +277,6 @@ var flowchartUIController = (function(){
 			messageArray.forEach(function(e){
 				wordWidth = Math.floor(that.textWidth(canvas, e, "paragraph_font"));
 				sentenceWidth = sentenceWidth + wordWidth;
-				console.log(sentenceWidth);
 			});
 
 		},
