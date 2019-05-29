@@ -214,6 +214,7 @@ var flowchartDataController = (function(){
 
 var flowchartUIController = (function(){
 
+
 	var DOMStrings = {
 		"canvasID": "flowchart-stage",
 		"context": "2d",
@@ -224,6 +225,64 @@ var flowchartUIController = (function(){
 		"container": 200, // container width for the content - by pixels
 		"line_color": "000000"
 	};
+
+
+
+
+	// Takes in canvas and font returns it based on container
+	var paragraphToArray = function(canvas, p){
+
+		var messageArray, 
+			sentenceArray = [],
+			sentenceTmp = "", 
+			wordWidth,
+			that = this,
+			sentenceWidth = 0;
+
+		messageArray = p.split(' ');
+
+		// takes paragraph and breaks it apart into an array by container width
+		messageArray.forEach(function(e){
+
+			wordWidth = Math.floor(textWidth(canvas, e, "paragraph_font"));
+			sentenceWidth = sentenceWidth + wordWidth;
+			sentenceTmp += e + " ";
+
+			if(DOMStrings.container <= sentenceWidth){
+				sentenceArray.push(sentenceTmp);
+				// clear out for next sentence
+				sentenceTmp = "";
+				sentenceWidth = 0;
+			}
+
+		});
+
+		return sentenceArray;
+	};
+
+
+	var textWidth = function(canvas_ref, txt, type){
+		var copy = txt,
+			text_width;
+			
+		canvas_ref.font = DOMStrings[type];
+		text_width = canvas_ref.measureText(copy).width;
+
+		return text_width;
+	};
+
+	var objSize = function(canvas_ref, obj, type){
+		var objTextWidth, objImageWidth;
+		
+		obj.TextWidth = textWidth(canvas_ref, obj.text.title, type);
+		obj.IMGWidth = DOMStrings.parentSize;
+
+		return obj;
+	};
+
+
+
+
 
 	return {
 		getDOMstrings: function(){
@@ -261,39 +320,22 @@ var flowchartUIController = (function(){
 
 		},
 		drawToCanvas: function(canvas, obj, type){
-			// Take the object and add it to the canvas based on type - object should have type / locations / name / etc
-			var messageArray, 
-				sentenceArray = [],
-				sentenceTmp = "", 
-				wordWidth,
-				that = this,
-				sentenceWidth = 0;
-
+			var pArray;
 			// write title
 			// write subtitle
 			// write subtext (type, audience, overview, etc)
 
-			// write message
+			/*
+				WRITE MESSAGE
+			*/
 			if(obj.message == "" || obj.message == undefined){
 				// do nothing if empty
 			}else{
-				messageArray = obj.message.split(' ');
-
-				// takes paragraph and breaks it apart into an array by container width
-				messageArray.forEach(function(e){
-
-					wordWidth = Math.floor(that.textWidth(canvas, e, "paragraph_font"));
-					sentenceWidth = sentenceWidth + wordWidth;
-					if(DOMStrings.container <= sentenceWidth){
-						sentenceTmp += e + " ";
-						sentenceArray.push(sentenceTmp);
-						// clear out for next sentence
-						sentenceTmp = "";
-						sentenceWidth = 0;
-					}else{
-						sentenceTmp += e + " ";
-					}
-
+				pArray = paragraphToArray(canvas, obj.message);
+				console.log(pArray);
+				pArray.forEach(function(ob) {
+					// Write ob to  canvas
+					// maybe writeParagraph(ob, x, y)
 				});
 			}
 
@@ -304,22 +346,12 @@ var flowchartUIController = (function(){
 		drawText: function(canvas, copy){
 			// create method that counts every certain word and breaks the texts
 		},
-		textWidth: function(canvas_ref, txt, type){
-			var copy = txt,
-				text_width;
-				
-			canvas_ref.font = DOMStrings[type];
-			text_width = canvas_ref.measureText(copy).width;
+		getObjSize(canvas, obj, type){
+			var objAddedDimensions;
+			// get object size on canvas
+			objAddedDimensions = objSize(canvas, obj, type);
 
-			return text_width;
-		},
-		objSize: function(canvas_ref, obj, type){
-			var objTextWidth, objImageWidth;
-			
-			obj.TextWidth = this.textWidth(canvas_ref, obj.text.title, type);
-			obj.IMGWidth = DOMStrings.parentSize;
-
-			return obj;
+			return objAddedDimensions;
 		}
 	}
 
@@ -339,13 +371,13 @@ var flowchartAppController = (function(dCon, UICon){
 			if(e.parent_name == "" || e.parent_name == undefined){
 				// console.log(e.text.title);
 				//get text or image size - distinguish type for larger text
-				objectsToAdd = UICon.objSize(canvas, e, "parent_font");
+				objectsToAdd = UICon.getObjSize(canvas, e, "parent_font");
 				//create flow item - add to object
 				dCon.createFlowItem(objectsToAdd);
 			}else{
 				// Children
 				//get text or image size - distinguiush type for larger text
-				objectsToAdd = UICon.objSize(canvas, e, "child_font");
+				objectsToAdd = UICon.getObjSize(canvas, e, "child_font");
 				//create flow item - add to object
 				dCon.createFlowItem(objectsToAdd);
 			}
