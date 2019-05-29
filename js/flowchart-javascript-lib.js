@@ -221,7 +221,7 @@ var flowchartUIController = (function(){
 		"parent_font": "30px BentonSans",
 		"child_font": "22px BentonSans",
 		"paragraph_font": "14px BentonSans",
-		"container": "150px",
+		"container": 200, // container width for the content - by pixels
 		"line_color": "000000"
 	};
 
@@ -263,7 +263,8 @@ var flowchartUIController = (function(){
 		drawToCanvas: function(canvas, obj, type){
 			// Take the object and add it to the canvas based on type - object should have type / locations / name / etc
 			var messageArray, 
-				sentenceArray, 
+				sentenceArray = [],
+				sentenceTmp = "", 
 				wordWidth,
 				that = this,
 				sentenceWidth = 0;
@@ -273,11 +274,31 @@ var flowchartUIController = (function(){
 			// write subtext (type, audience, overview, etc)
 
 			// write message
-			messageArray = obj.message.split(' ');
-			messageArray.forEach(function(e){
-				wordWidth = Math.floor(that.textWidth(canvas, e, "paragraph_font"));
-				sentenceWidth = sentenceWidth + wordWidth;
-			});
+			if(obj.message == "" || obj.message == undefined){
+				// do nothing if empty
+			}else{
+				messageArray = obj.message.split(' ');
+
+				// takes paragraph and breaks it apart into an array by container width
+				messageArray.forEach(function(e){
+
+					wordWidth = Math.floor(that.textWidth(canvas, e, "paragraph_font"));
+					sentenceWidth = sentenceWidth + wordWidth;
+					if(DOMStrings.container <= sentenceWidth){
+						sentenceTmp += e + " ";
+						sentenceArray.push(sentenceTmp);
+						// clear out for next sentence
+						sentenceTmp = "";
+						sentenceWidth = 0;
+					}else{
+						sentenceTmp += e + " ";
+					}
+
+				});
+			}
+
+		},
+		drawToContainer: function(title, subtitle, contentObj, x, y){
 
 		},
 		drawText: function(canvas, copy){
