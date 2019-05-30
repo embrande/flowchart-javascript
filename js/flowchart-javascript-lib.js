@@ -70,7 +70,7 @@ var flowchartDataController = (function(){
 		this.section = obj.section;
 		this.sibling_name = obj.sibling_name;
 		this.title = obj.text.title;
-		this.subtitle = obj.text.title;
+		this.subtitle = obj.text.subtitle;
 		this.audience = obj.text.audience;
 		this.email = obj.text.email;
 		this.link = obj.text.link;
@@ -93,9 +93,9 @@ var flowchartDataController = (function(){
 	};
 
 	var flowchartData = {
-		distanceX: 300,
+		distanceX: 500,
 		distanceY: 300,
-		distanceChildY: 100,
+		distanceChildY: 300,
 		globalY: 0,
 		parentStructure: [],
 		objects: []
@@ -219,11 +219,17 @@ var flowchartUIController = (function(){
 		"canvasID": "flowchart-stage",
 		"context": "2d",
 		"parentSize": 75,
-		"parent_font": "30px BentonSans",
+		"parent_font": "28px BentonSans",
 		"child_font": "22px BentonSans",
 		"paragraph_font": "14px BentonSans",
 		"container": 200, // container width for the content - by pixels
-		"line_color": "000000"
+		"line_color": "000000",
+	};
+
+	var spacing = {
+		"objectSpacing": 30,
+		"headerSpacing": 38,
+		"paragraphSpacing": 22
 	};
 
 
@@ -280,6 +286,23 @@ var flowchartUIController = (function(){
 		return obj;
 	};
 
+	var imgAdd = function(canvas_ref, imgUrl, posX, posY){
+		var img = new Image();
+			img.src = imgUrl;
+			img.canvas_ref = canvas_ref;
+
+		img.onload = function(e){
+			canvas_ref.drawImage(img, posX, posY, DOMStrings.parentSize, DOMStrings.parentSize);
+		}
+		
+	};
+
+	var textAdd = function(canvas_ref, copy, fonts, x, y){
+		canvas_ref.font = fonts;
+		canvas_ref.fillText(copy, x, y);
+	};
+
+
 
 
 
@@ -297,32 +320,27 @@ var flowchartUIController = (function(){
 				"c_graph": c_graph
 			};
 		},
-		addParent: function(canvas, obj){
-			var img = obj.icon;
-
-			var imgAdded = (function(canvas, imgUrl, posY, posX){
-				var img = new Image();
-					img.src = imgUrl;
-					img.canvas_ref = canvas;
-				img.onload = function(e){
-					/***
-
-						Replace below with x and y positions once I have that in the OBJ
-
-					****/
-					canvas.drawImage(img, 10, 0, DOMStrings.parentSize, DOMStrings.parentSize);
-				}
-				
-			})(canvas, img);
-
-		},
 		addChild: function(canvas, obj, parent){
 
 		},
 		drawToCanvas: function(canvas, obj, type){
-			var pArray;
+			var pArray,
+				o = obj,
+				X = o.X,
+				Y = o.Y,
+				fontX = X + o.img_width + spacing.objectSpacing,
+				titleY = Y + spacing.headerSpacing,
+				subTitleY = titleY + spacing.headerSpacing;
+
+			// write image
+			this.drawImage(canvas, o.icon, o.X, o.Y);
+
 			// write title
+			this.drawText(canvas, obj.title, DOMStrings["parent_font"], fontX, titleY);
+
 			// write subtitle
+			this.drawText(canvas, obj.subtitle, DOMStrings["child_font"], fontX, subTitleY);
+
 			// write subtext (type, audience, overview, etc)
 
 			/*
@@ -332,7 +350,6 @@ var flowchartUIController = (function(){
 				// do nothing if empty
 			}else{
 				pArray = paragraphToArray(canvas, obj.message);
-				console.log(pArray);
 				pArray.forEach(function(ob) {
 					// Write ob to  canvas
 					// maybe writeParagraph(ob, x, y)
@@ -343,8 +360,12 @@ var flowchartUIController = (function(){
 		drawToContainer: function(title, subtitle, contentObj, x, y){
 
 		},
-		drawText: function(canvas, copy){
+		drawText: function(canvas, copy, font, x, y){
 			// create method that counts every certain word and breaks the texts
+			textAdd(canvas, copy, font, x, y);
+		},
+		drawImage: function(canvas, img, x, y){
+			imgAdd(canvas, img, x, y);
 		},
 		getObjSize(canvas, obj, type){
 			var objAddedDimensions;
@@ -396,7 +417,12 @@ var flowchartAppController = (function(dCon, UICon){
 	};
 
 	var canvasInit = function(){
+		c = UICon.getCanvas().c;
 		canvas = UICon.getCanvas().c_graph;
+
+		c.parent = c.parentNode;
+		c.width = c.parentNode.offsetWidth;
+		c.height = c.parentNode.offsetHeight;
 	};
 
 
