@@ -1,5 +1,6 @@
 // expects a canvas with a flowchart-stage id
 // expects a object call after it with JSON and the following layout:
+// for now - this requires fabric.js
 /*
 
 	//As of now, the parent needs to be before the children
@@ -62,6 +63,7 @@
 var flowchartDataController = (function(){
 
 	var FlowchartArrayMember = function(obj, io){
+		this.isParent = obj.isParent;
 		this.firstOrNot = io;
 		this.name = obj.name;
 		this.icon = obj.icon;
@@ -75,7 +77,7 @@ var flowchartDataController = (function(){
 		this.email = obj.text.email;
 		this.link = obj.text.link;
 		this.message = obj.text.message;
-		this.overview = obj.text.message;
+		this.overview = obj.text.overview;
 		this.type = obj.text.type;
 		this.unique_hex_color = obj.unique_hex_color;
 		this.unique_hex_color_child = obj.unique_hex_color_child;
@@ -216,20 +218,19 @@ var flowchartUIController = (function(){
 
 
 	var DOMStrings = {
-		"canvasID": "flowchart-stage",
 		"context": "2d",
 		"parentSize": 75,
-		"parent_font": "28px BentonSans",
-		"child_font": "22px BentonSans",
-		"paragraph_font": "14px BentonSans",
+		"parent_font": "22px BentonSans",
+		"child_font": "18px BentonSans",
+		"paragraph_font": "12px BentonSans",
 		"container": 200, // container width for the content - by pixels
 		"line_color": "000000",
 	};
 
 	var spacing = {
-		"objectSpacing": 30,
-		"headerSpacing": 38,
-		"paragraphSpacing": 22
+		"objectSpacing": 34,
+		"headerSpacing": 25,
+		"paragraphSpacing": 18
 	};
 
 
@@ -289,7 +290,6 @@ var flowchartUIController = (function(){
 	var imgAdd = function(canvas_ref, imgUrl, posX, posY){
 		var img = new Image();
 			img.src = imgUrl;
-			img.canvas_ref = canvas_ref;
 
 		img.onload = function(e){
 			canvas_ref.drawImage(img, posX, posY, DOMStrings.parentSize, DOMStrings.parentSize);
@@ -302,6 +302,14 @@ var flowchartUIController = (function(){
 		canvas_ref.fillText(copy, x, y);
 	};
 
+	var writeMessageToCanvas = function(canvas_ref, message, x, y){
+		pArray = paragraphToArray(canvas_ref, message);
+		pArray.forEach(function(ob) {
+			// Write ob to  canvas
+			// maybe writeParagraph(ob, x, y)
+		});
+	}
+
 
 
 
@@ -311,8 +319,8 @@ var flowchartUIController = (function(){
 		getDOMstrings: function(){
 			return DOMStrings;
 		},
-		getCanvas: function(){
-			var c = document.getElementById(DOMStrings.canvasID),
+		getCanvas: function(cID){
+			var c = document.getElementById(cID),
 				c_graph = c.getContext(DOMStrings.context);
 
 			return {
@@ -320,57 +328,57 @@ var flowchartUIController = (function(){
 				"c_graph": c_graph
 			};
 		},
-		addChild: function(canvas, obj, parent){
+		drawToCanvas: function(c, ob){
 
-		},
-		drawToCanvas: function(canvas, obj, type){
 			var pArray,
-				o = obj,
+				o = ob,
 				X = o.X,
 				Y = o.Y,
 				fontX = X + o.img_width + spacing.objectSpacing,
-				titleY = Y + spacing.headerSpacing,
-				subTitleY = titleY + spacing.headerSpacing;
+				titleY = Y + ( spacing.objectSpacing * 1.5),
+				subTitleY = titleY + spacing.headerSpacing,
+				c1Y = subTitleY + spacing.objectSpacing,
+				c2Y = c1Y + spacing.paragraphSpacing,
+				c3Y = c2Y + spacing.paragraphSpacing;
 
 			// write image
-			this.drawImage(canvas, o.icon, o.X, o.Y);
+			this.drawImage(c, o.icon, o.X, o.Y);
 
 			// write title
-			this.drawText(canvas, obj.title, DOMStrings["parent_font"], fontX, titleY);
+			this.drawText(c, o.title, DOMStrings["parent_font"], fontX, titleY);
 
-			// write subtitle
-			this.drawText(canvas, obj.subtitle, DOMStrings["child_font"], fontX, subTitleY);
 
-			// write subtext (type, audience, overview, etc)
-
-			/*
-				WRITE MESSAGE
-			*/
-			if(obj.message == "" || obj.message == undefined){
-				// do nothing if empty
+			if(o.isParent){
+				// don't attempt to write out a message if is a parent
 			}else{
-				pArray = paragraphToArray(canvas, obj.message);
-				pArray.forEach(function(ob) {
-					// Write ob to  canvas
-					// maybe writeParagraph(ob, x, y)
-				});
+				// write subtitle
+				this.drawText(c, o.subtitle, DOMStrings["child_font"], fontX, subTitleY);
+
+				// write subtext (type, audience, overview, etc)
+				this.drawText(c, "Overview: " + o.overview, DOMStrings["paragraph_font"], fontX, c1Y);
+				this.drawText(c, "Audience: " + o.audience, DOMStrings["paragraph_font"], fontX, c2Y);
+				this.drawText(c, "Method: " + o.type, DOMStrings["paragraph_font"], fontX, c3Y);
+
+				//write message
+				this.writeMessage(c, o.message, X, Y);
+				
 			}
 
 		},
-		drawToContainer: function(title, subtitle, contentObj, x, y){
-
+		writeMessage: function(c, m, x, y){
+			writeMessageToCanvas(c, m, x, y);
 		},
-		drawText: function(canvas, copy, font, x, y){
+		drawText: function(c, co, f, x, y){
 			// create method that counts every certain word and breaks the texts
-			textAdd(canvas, copy, font, x, y);
+			textAdd(c, co, f, x, y);
 		},
-		drawImage: function(canvas, img, x, y){
-			imgAdd(canvas, img, x, y);
+		drawImage: function(c, i, x, y){
+			imgAdd(c, i, x, y);
 		},
-		getObjSize(canvas, obj, type){
+		getObjSize(c, o, t){
 			var objAddedDimensions;
 			// get object size on canvas
-			objAddedDimensions = objSize(canvas, obj, type);
+			objAddedDimensions = objSize(c, o, t);
 
 			return objAddedDimensions;
 		}
@@ -390,15 +398,16 @@ var flowchartAppController = (function(dCon, UICon){
 	var loopData = function(flowchart){
 		flowchart.forEach(function(e){
 			if(e.parent_name == "" || e.parent_name == undefined){
-				// console.log(e.text.title);
 				//get text or image size - distinguish type for larger text
 				objectsToAdd = UICon.getObjSize(canvas, e, "parent_font");
+				objectsToAdd.isParent = true;
 				//create flow item - add to object
 				dCon.createFlowItem(objectsToAdd);
 			}else{
 				// Children
 				//get text or image size - distinguiush type for larger text
 				objectsToAdd = UICon.getObjSize(canvas, e, "child_font");
+				objectsToAdd.isParent = false;
 				//create flow item - add to object
 				dCon.createFlowItem(objectsToAdd);
 			}
@@ -416,10 +425,14 @@ var flowchartAppController = (function(dCon, UICon){
 		});
 	};
 
-	var canvasInit = function(){
-		c = UICon.getCanvas().c;
-		canvas = UICon.getCanvas().c_graph;
+	var canvasInit = function(id){
+		var canvasInitializedReturn = UICon.getCanvas(id),
+			c = canvasInitializedReturn.c;
+		canvas = canvasInitializedReturn.c_graph;
 
+		if(c == null){
+			alert("Your browser does not support this tool.");
+		}
 		c.parent = c.parentNode;
 		c.width = c.parentNode.offsetWidth;
 		c.height = c.parentNode.offsetHeight;
@@ -427,8 +440,8 @@ var flowchartAppController = (function(dCon, UICon){
 
 
 	return {
-		init: function(flowVar){
-			canvasInit();
+		init: function(id, flowVar){
+			canvasInit(id);
 			loopData(flowVar);
 			parentStructure();
 			drawItems();
@@ -446,5 +459,5 @@ var flowchartAppController = (function(dCon, UICon){
 
 
 window.onload = function(){
-	flowchartAppController.init(flowchartStage);
+	flowchartAppController.init("flowchart-stage", flowchartStage);
 }
