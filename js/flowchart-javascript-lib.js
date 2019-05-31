@@ -272,10 +272,11 @@ var flowchartUIController = (function(){
 		var copy = txt,
 			text_width;
 			
-		canvas_ref.font = DOMStrings[type];
-		text_width = canvas_ref.measureText(copy).width;
+		// canvas_ref.font = DOMStrings[type];
+		// text_width = canvas_ref.measureText(copy).width;
+		var text_width = new fabric.Text(copy);
 
-		return text_width;
+		return text_width.width;
 	};
 
 	var objSize = function(canvas_ref, obj, type){
@@ -291,15 +292,24 @@ var flowchartUIController = (function(){
 		var img = new Image();
 			img.src = imgUrl;
 
-		img.onload = function(e){
-			canvas_ref.drawImage(img, posX, posY, DOMStrings.parentSize, DOMStrings.parentSize);
-		}
+		fabric.Image.fromURL(imgUrl, function(img){
+			var imgNumber = img.set({
+				left: posX, 
+				top: posY, 
+				width: DOMStrings.parentSize, 
+				height: DOMStrings.parentSize
+			});
+			canvas_ref.add(imgNumber);
+		});
 		
 	};
 
 	var textAdd = function(canvas_ref, copy, fonts, x, y){
-		canvas_ref.font = fonts;
-		canvas_ref.fillText(copy, x, y);
+		var text = new fabric.Text(copy,{
+			left: x,
+			top: y
+		});
+		canvas_ref.add(text);
 	};
 
 	var writeMessageToCanvas = function(canvas_ref, message, x, y){
@@ -308,7 +318,11 @@ var flowchartUIController = (function(){
 			// Write ob to  canvas
 			// maybe writeParagraph(ob, x, y)
 		});
-	}
+	};
+
+	var renderCanvas = function(canvas_ref){
+		canvas_ref.renderAll();
+	};
 
 
 
@@ -320,12 +334,13 @@ var flowchartUIController = (function(){
 			return DOMStrings;
 		},
 		getCanvas: function(cID){
-			var c = document.getElementById(cID),
-				c_graph = c.getContext(DOMStrings.context);
+			
+			var c = window.__canvas = new fabric.Canvas(cID),
+				parent = document.getElementById(cID).parentElement.parentElement;
+			c.pNode = parent;
 
 			return {
-				"c": c,
-				"c_graph": c_graph
+				"c": c
 			};
 		},
 		drawToCanvas: function(c, ob){
@@ -374,6 +389,9 @@ var flowchartUIController = (function(){
 		},
 		drawImage: function(c, i, x, y){
 			imgAdd(c, i, x, y);
+		},
+		renderFabricCanvas: function(c){
+			renderCanvas(c);
 		},
 		getObjSize(c, o, t){
 			var objAddedDimensions;
@@ -428,14 +446,20 @@ var flowchartAppController = (function(dCon, UICon){
 	var canvasInit = function(id){
 		var canvasInitializedReturn = UICon.getCanvas(id),
 			c = canvasInitializedReturn.c;
-		canvas = canvasInitializedReturn.c_graph;
+		canvas = c;
 
 		if(c == null){
 			alert("Your browser does not support this tool.");
 		}
-		c.parent = c.parentNode;
-		c.width = c.parentNode.offsetWidth;
-		c.height = c.parentNode.offsetHeight;
+
+		c.parent = c.pNode;
+		c.setWidth(c.pNode.offsetWidth);
+		c.setHeight(c.pNode.offsetHeight);
+		fabric.Object.prototype.objectCaching = true;
+	};
+
+	var renderCanvas = function(){
+		UICon.renderFabricCanvas(canvas);
 	};
 
 
@@ -445,6 +469,7 @@ var flowchartAppController = (function(dCon, UICon){
 			loopData(flowVar);
 			parentStructure();
 			drawItems();
+			renderCanvas();
 		},
 		addParent: function(){
 
