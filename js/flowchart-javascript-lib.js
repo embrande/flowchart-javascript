@@ -289,17 +289,15 @@ var flowchartUIController = (function(){
 	};
 
 	var imgAdd = function(canvas_ref, imgUrl, posX, posY){
-		var img = new Image();
-			img.src = imgUrl;
 
 		fabric.Image.fromURL(imgUrl, function(img){
-			var imgNumber = img.set({
-				left: posX, 
-				top: posY, 
-				width: DOMStrings.parentSize, 
-				height: DOMStrings.parentSize
+			img.set({
+				'left': posX, 
+				'top': posY
 			});
-			canvas_ref.add(imgNumber);
+			img.scaleToWidth(DOMStrings.parentSize);
+			console.log(img);
+			canvas_ref.add(img);
 		});
 		
 	};
