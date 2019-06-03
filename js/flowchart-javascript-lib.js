@@ -63,7 +63,6 @@
 var flowchartDataController = (function(){
 
 	var FlowchartArrayMember = function(obj, io){
-		this.isParent = obj.isParent;
 		this.firstOrNot = io;
 		this.name = obj.name;
 		this.icon = obj.icon;
@@ -96,8 +95,8 @@ var flowchartDataController = (function(){
 
 	var flowchartData = {
 		distanceX: 500,
-		distanceY: 300,
-		distanceChildY: 300,
+		distanceY: 350,
+		distanceChildY: 400,
 		globalY: 0,
 		parentStructure: [],
 		objects: []
@@ -132,6 +131,8 @@ var flowchartDataController = (function(){
 				}else{
 					if(e.sibling_name !== ""){
 						// parent sibling
+						objStructure = that.siblingObj(e);
+						that.objectManipulate(objStructure);
 					}else{
 						objStructure = that.parentObj(e);
 						that.objectManipulate(objStructure);
@@ -147,6 +148,20 @@ var flowchartDataController = (function(){
 				"y": y,
 				"x": x
 			};
+		},
+		siblingObj: function(obj){
+			var x, y,
+				siblingName = obj.sibling_name;
+
+			y = this.getXY(siblingName, "y");
+			x = this.getXY(siblingName, "x") + flowchartData.distanceY;
+			console.log(obj.name);
+			return {
+				obj: obj,
+				name: obj.name,
+				x: x,
+				y: y
+			}
 		},
 		parentObj: function(obj){
 			var x, y;
@@ -220,10 +235,13 @@ var flowchartUIController = (function(){
 	var DOMStrings = {
 		"context": "2d",
 		"parentSize": 75,
-		"parent_font": "22px BentonSans",
-		"child_font": "18px BentonSans",
-		"paragraph_font": "12px BentonSans",
-		"container": 200, // container width for the content - by pixels
+		"parent_font": "BentonSans",
+		"parent_font_size": 22,
+		"child_font": "BentonSans",
+		"child_font_size": 18,
+		"paragraph_font": "BentonSans",
+		"paragraph_font_size": 12,
+		"container": 300, // container width for the content - by pixels
 		"line_color": "000000",
 	};
 
@@ -247,11 +265,10 @@ var flowchartUIController = (function(){
 			sentenceWidth = 0;
 
 		messageArray = p.split(' ');
-
 		// takes paragraph and breaks it apart into an array by container width
 		messageArray.forEach(function(e){
 
-			wordWidth = Math.floor(textWidth(canvas, e, "paragraph_font"));
+			wordWidth = Math.floor(textWidth(canvas, e, DOMStrings['paragraph_font_size'], DOMStrings['paragraph_font']));
 			sentenceWidth = sentenceWidth + wordWidth;
 			sentenceTmp += e + " ";
 
@@ -268,21 +285,22 @@ var flowchartUIController = (function(){
 	};
 
 
-	var textWidth = function(canvas_ref, txt, type){
+	var textWidth = function(canvas_ref, txt, fontSize, type){
 		var copy = txt,
 			text_width;
 			
 		// canvas_ref.font = DOMStrings[type];
 		// text_width = canvas_ref.measureText(copy).width;
-		var text_width = new fabric.Text(copy);
-
+		var text_width = new fabric.Text(copy, {
+			'fontSize': fontSize
+		});
 		return text_width.width;
 	};
 
-	var objSize = function(canvas_ref, obj, type){
+	var objSize = function(canvas_ref, obj, fontSize, type){
 		var objTextWidth, objImageWidth;
 		
-		obj.TextWidth = textWidth(canvas_ref, obj.text.title, type);
+		obj.TextWidth = textWidth(canvas_ref, obj.text.title, DOMStrings[fontSize], type);
 		obj.IMGWidth = DOMStrings.parentSize;
 
 		return obj;
@@ -293,28 +311,52 @@ var flowchartUIController = (function(){
 		fabric.Image.fromURL(imgUrl, function(img){
 			img.set({
 				'left': posX, 
-				'top': posY
+				'top': posY,
+				'lockMovementX': true,
+				'lockMovementY': true,
+				'lockScalingX': true,
+				'lockScalingY': true,
+				'lockRotation': true,
+				'hasControls': false,
+				'hasBorders': false
 			});
 			img.scaleToWidth(DOMStrings.parentSize);
-			console.log(img);
+
 			canvas_ref.add(img);
 		});
 		
 	};
 
-	var textAdd = function(canvas_ref, copy, fonts, x, y){
+	var textAdd = function(canvas_ref, copy, fontsFamily, fonts, x, y){
 		var text = new fabric.Text(copy,{
-			left: x,
-			top: y
+			'left': x,
+			'top': y,
+			'fontSize': fonts,
+			'lockMovementX': true,
+			'lockMovementY': true,
+			'lockScalingX': true,
+			'lockScalingY': true,
+			'lockRotation': true,
+			'hasControls': false,
+			'hasBorders': false
 		});
+
 		canvas_ref.add(text);
 	};
 
 	var writeMessageToCanvas = function(canvas_ref, message, x, y){
-		pArray = paragraphToArray(canvas_ref, message);
+		var pArray = paragraphToArray(canvas_ref, message);
+		var ySpacing = y;
 		pArray.forEach(function(ob) {
 			// Write ob to  canvas
 			// maybe writeParagraph(ob, x, y)
+			if((ySpacing - y) <= (DOMStrings['container'] / 2)){
+				textAdd(canvas_ref, ob, DOMStrings['paragraph_font'], DOMStrings['paragraph_font_size'], x, ySpacing);
+				ySpacing = ySpacing + spacing['paragraphSpacing'];
+			}else{
+
+				// Push a link to see the whole email here
+			}
 		});
 	};
 
@@ -353,27 +395,28 @@ var flowchartUIController = (function(){
 				c1Y = subTitleY + spacing.objectSpacing,
 				c2Y = c1Y + spacing.paragraphSpacing,
 				c3Y = c2Y + spacing.paragraphSpacing;
+				c4Y = c3Y + spacing.paragraphSpacing;
 
 			// write image
 			this.drawImage(c, o.icon, o.X, o.Y);
 
 			// write title
-			this.drawText(c, o.title, DOMStrings["parent_font"], fontX, titleY);
+			this.drawText(c, o.title, DOMStrings["parent_font"], DOMStrings["parent_font_size"], fontX, titleY);
 
 
 			if(o.isParent){
 				// don't attempt to write out a message if is a parent
 			}else{
 				// write subtitle
-				this.drawText(c, o.subtitle, DOMStrings["child_font"], fontX, subTitleY);
+				this.drawText(c, o.subtitle, DOMStrings["child_font"], DOMStrings["child_font_size"], fontX, subTitleY);
 
 				// write subtext (type, audience, overview, etc)
-				this.drawText(c, "Overview: " + o.overview, DOMStrings["paragraph_font"], fontX, c1Y);
-				this.drawText(c, "Audience: " + o.audience, DOMStrings["paragraph_font"], fontX, c2Y);
-				this.drawText(c, "Method: " + o.type, DOMStrings["paragraph_font"], fontX, c3Y);
+				this.drawText(c, "Overview: " + o.overview, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c1Y);
+				this.drawText(c, "Audience: " + o.audience, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c2Y);
+				this.drawText(c, "Method: " + o.type, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c3Y);
 
 				//write message
-				this.writeMessage(c, o.message, X, Y);
+				this.writeMessage(c, o.message, fontX, c4Y);
 				
 			}
 
@@ -381,9 +424,9 @@ var flowchartUIController = (function(){
 		writeMessage: function(c, m, x, y){
 			writeMessageToCanvas(c, m, x, y);
 		},
-		drawText: function(c, co, f, x, y){
+		drawText: function(c, co, ff, f, x, y){
 			// create method that counts every certain word and breaks the texts
-			textAdd(c, co, f, x, y);
+			textAdd(c, co, ff, f, x, y);
 		},
 		drawImage: function(c, i, x, y){
 			imgAdd(c, i, x, y);
@@ -391,10 +434,10 @@ var flowchartUIController = (function(){
 		renderFabricCanvas: function(c){
 			renderCanvas(c);
 		},
-		getObjSize(c, o, t){
+		getObjSize(c, o, ts, t){
 			var objAddedDimensions;
 			// get object size on canvas
-			objAddedDimensions = objSize(c, o, t);
+			objAddedDimensions = objSize(c, o, ts, t);
 
 			return objAddedDimensions;
 		}
@@ -415,14 +458,14 @@ var flowchartAppController = (function(dCon, UICon){
 		flowchart.forEach(function(e){
 			if(e.parent_name == "" || e.parent_name == undefined){
 				//get text or image size - distinguish type for larger text
-				objectsToAdd = UICon.getObjSize(canvas, e, "parent_font");
+				objectsToAdd = UICon.getObjSize(canvas, e, "parent_font_size", "parent_font");
 				objectsToAdd.isParent = true;
 				//create flow item - add to object
 				dCon.createFlowItem(objectsToAdd);
 			}else{
 				// Children
 				//get text or image size - distinguiush type for larger text
-				objectsToAdd = UICon.getObjSize(canvas, e, "child_font");
+				objectsToAdd = UICon.getObjSize(canvas, e, "child_font_size", "child_font");
 				objectsToAdd.isParent = false;
 				//create flow item - add to object
 				dCon.createFlowItem(objectsToAdd);
