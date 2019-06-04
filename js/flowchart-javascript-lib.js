@@ -66,6 +66,7 @@ var flowchartDataController = (function(){
 		this.firstOrNot = io;
 		this.name = obj.name;
 		this.icon = obj.icon;
+		this.icon_width = obj.IMGWidth;
 		this.level = obj.level;
 		this.parent = obj.parent_name;
 		this.section = obj.section;
@@ -90,6 +91,25 @@ var flowchartDataController = (function(){
 		coordinates: function(x,y){
 			this.X = x;
 			this.Y = y;
+		},
+		pinpoints: function(){
+			//creates pinpoints of middle of each side of the icon for line drawing
+			var icon_half = this.icon_width / 2;
+
+			this.pinpoint = {},
+				this.pinpoint.top = {},
+				this.pinpoint.right = {},
+				this.pinpoint.bottom = {},
+				this.pinpoint.left = {};
+
+					this.pinpoint.top.x = this.X + icon_half;
+					this.pinpoint.top.y = this.Y;
+					this.pinpoint.right.x = this.X + this.icon_width;
+					this.pinpoint.right.y = this.Y + icon_half;
+					this.pinpoint.bottom.x = this.X;
+					this.pinpoint.bottom.y = this.Y + this.icon_width;
+					this.pinpoint.left.x = this.X;
+					this.pinpoint.left.y = this.Y + icon_half;
 		}
 	};
 
@@ -97,7 +117,8 @@ var flowchartDataController = (function(){
 		distanceX: 500,
 		distanceY: 350,
 		distanceChildY: 400,
-		globalY: 0,
+		globalY: 50,
+		globalX: 50,
 		parentStructure: [],
 		objects: []
 	};
@@ -105,7 +126,6 @@ var flowchartDataController = (function(){
 	return {
 		createFlowItem: function(obj){
 			var flowItemObject;
-
 			// if the object isn't empty
 				//create a new array object
 			if(flowchartData.objects.length > 0){
@@ -137,7 +157,8 @@ var flowchartDataController = (function(){
 				}
 				that.addToParentStructure(objFeatures);
 				that.objectManipulate(e, objFeatures.x, objFeatures.y);
-				console.log(flowchartData.parentStructure);
+				that.objectPinpoints(e);
+				console.log(e.parent);
 			});
 		},
 		addToParentStructure: function(obj){
@@ -162,10 +183,10 @@ var flowchartDataController = (function(){
 				siblingName = obj.sibling_name;
 
 			y = this.getXY(siblingName, "pY");
-			x = this.getXY(siblingName, "x") + flowchartData.distanceY;
+			x = this.getXY(siblingName, "x") + (flowchartData.distanceX * 2);
 
 			return {
-				name: siblingName,
+				name: obj.name,
 				x: x,
 				y: y
 			}
@@ -174,7 +195,7 @@ var flowchartDataController = (function(){
 			var x, y;
 
 			y = this.getXY(null, "y");
-			x = 0;
+			x = flowchartData.globalX;
 
 			this.increaseGlobalY(flowchartData.distanceY);
 
@@ -206,6 +227,9 @@ var flowchartDataController = (function(){
 		},
 		objectManipulate: function(obj, x, y){
 			obj.coordinates(x, y);
+		},
+		objectPinpoints: function(obj){
+			obj.pinpoints();
 		},
 		getXY: function(parentName, dir){
 
@@ -424,6 +448,10 @@ var flowchartUIController = (function(){
 
 				//write message
 				this.writeMessage(c, o.message, fontX, c4Y);
+
+
+				// draw lines
+					//call lin
 				
 			}
 
