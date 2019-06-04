@@ -120,45 +120,52 @@ var flowchartDataController = (function(){
 		},
 		parentStructure: function(){
 			var that = this,
-				objStructure;
+				objFeatures;
 
 			//run through each object in the data and reassign their coordinates
 			flowchartData.objects.forEach(function(e){
 				if(e.parent !== "" && e.parent !== undefined){
 					//child level
-					objStructure = that.childObj(e);
-					that.objectManipulate(objStructure);
+					objFeatures = that.childObj(e);
 				}else{
 					if(e.sibling_name !== ""){
 						// parent sibling
-						objStructure = that.siblingObj(e);
-						that.objectManipulate(objStructure);
+						objFeatures = that.siblingObj(e);
 					}else{
-						objStructure = that.parentObj(e);
-						that.objectManipulate(objStructure);
+						objFeatures = that.parentObj(e);
 					}
 				}
+				that.addToParentStructure(objFeatures);
+				that.objectManipulate(e, objFeatures.x, objFeatures.y);
+				console.log(flowchartData.parentStructure);
 			});
 		},
-		addToParentStructure: function(name, x, y){
+		addToParentStructure: function(obj){
 			// take in name and add it to the flowchardata's parent structure
 			// this is so we can begin incrementing furthest x and y values to store in the objects
+			
+			var name = obj["name"],
+				thisObj = obj;
 
-			flowchartData.parentStructure[name] = {
-				"y": y,
-				"x": x
-			};
+			// flowchartData.parentStructure[name] = {};
+			if(!flowchartData.parentStructure.hasOwnProperty(name)){
+				flowchartData.parentStructure[name] = {};
+			}
+			delete thisObj.name;
+
+			for(key in thisObj){
+				flowchartData.parentStructure[name][key] = obj[key]; 
+			}
 		},
 		siblingObj: function(obj){
 			var x, y,
 				siblingName = obj.sibling_name;
 
-			y = this.getXY(siblingName, "y");
+			y = this.getXY(siblingName, "pY");
 			x = this.getXY(siblingName, "x") + flowchartData.distanceY;
-			console.log(obj.name);
+
 			return {
-				obj: obj,
-				name: obj.name,
+				name: siblingName,
 				x: x,
 				y: y
 			}
@@ -172,10 +179,11 @@ var flowchartDataController = (function(){
 			this.increaseGlobalY(flowchartData.distanceY);
 
 			return {
-				obj: obj,
 				name: obj.name,
 				x: x,
-				y: y
+				y: y,
+				pX: x,
+				pY: y
 			}
 			
 		},
@@ -190,21 +198,20 @@ var flowchartDataController = (function(){
 			this.increaseGlobalY(flowchartData.distanceChildY);
 
 			return {
-				obj: obj,
 				name: parentName,
 				x: x,
 				y: y
 			}
 
 		},
-		objectManipulate: function(obj){
-			var x = obj.x,
-				y = obj.y;
-
-			this.addToParentStructure(obj.name, x, y);
-			obj.obj.coordinates(x, y);
+		objectManipulate: function(obj, x, y){
+			obj.coordinates(x, y);
 		},
 		getXY: function(parentName, dir){
+
+			// If parentName is null - outputs global Y
+			// If a child - outputs the direction of X or Y based on it's added x or y in the heirarchy
+
 			var direction = dir;
 			var previous = parentName;
 
