@@ -92,24 +92,27 @@ var flowchartDataController = (function(){
 			this.X = x;
 			this.Y = y;
 		},
-		pinpoints: function(){
+		pinpoints: function(type){
 			//creates pinpoints of middle of each side of the icon for line drawing
 			var icon_half = this.icon_width / 2;
 
-			this.pinpoint = {},
-				this.pinpoint.top = {},
-				this.pinpoint.right = {},
-				this.pinpoint.bottom = {},
-				this.pinpoint.left = {};
+			this.pinpoint = {};
 
-					this.pinpoint.top.x = this.X + icon_half;
-					this.pinpoint.top.y = this.Y;
-					this.pinpoint.right.x = this.X + this.icon_width;
-					this.pinpoint.right.y = this.Y + icon_half;
-					this.pinpoint.bottom.x = this.X;
-					this.pinpoint.bottom.y = this.Y + this.icon_width;
-					this.pinpoint.left.x = this.X;
-					this.pinpoint.left.y = this.Y + icon_half;
+			if(type == "child"){
+				this.pinpoint.top = {};
+				this.pinpoint.x = this.X + icon_half;
+				this.pinpoint.y = this.Y;
+			}else if(type == "sibling"){
+				this.pinpoint.left = {};
+					this.pinpoint.x = this.X;
+					this.pinpoint.y = this.Y + icon_half;
+			}
+				// this.pinpoint.right = {};
+				// 	this.pinpoint.right.x = this.X + this.icon_width;
+				// 	this.pinpoint.right.y = this.Y + icon_half;
+				// this.pinpoint.bottom = {};
+				// 	this.pinpoint.bottom.x = this.X;
+				// 	this.pinpoint.bottom.y = this.Y + this.icon_width;
 		},
 		previousPinpoint: function(x, y, type){
 			var icon_half = this.icon_width / 2;
@@ -171,7 +174,7 @@ var flowchartDataController = (function(){
 
 				that.addToParentStructure(objFeatures);
 				that.objectManipulate(e, objFeatures.x, objFeatures.y);
-				that.objectPinpoints(e);
+				that.objectPinpoints(e, objFeatures);
 
 				// set up previous pinpoints on the preceding object
 				// IE - get the parent name from the object and get the parents stored px and py
@@ -264,8 +267,9 @@ var flowchartDataController = (function(){
 		objectManipulate: function(obj, x, y){
 			obj.coordinates(x, y);
 		},
-		objectPinpoints: function(obj){
-			obj.pinpoints();
+		objectPinpoints: function(e, obj){
+			var type = obj.previousType;
+			e.pinpoints(type);
 		},
 		prevPin: function(e, x, y, type){
 			e.previousPinpoint(x, y, type);
@@ -313,6 +317,7 @@ var flowchartUIController = (function(){
 		"paragraph_font_size": 12,
 		"container": 300, // container width for the content - by pixels
 		"line_color": "000000",
+		"stroke": 5
 	};
 
 	var spacing = {
@@ -430,6 +435,21 @@ var flowchartUIController = (function(){
 		});
 	};
 
+	var linesToCanvas = function(c, px, py, cx, cy){
+
+		c.add(makeLine([px,py,cx,cy]));
+
+		function makeLine(coords){
+			return new fabric.Line(coords, {
+				fill: DOMStrings.color,
+				stroke: DOMStrings.color,
+				strokeWidth: DOMStrings.stroke,
+				selectable: false,
+				evented: false
+			});
+		}
+	};
+
 	var renderCanvas = function(canvas_ref){
 		canvas_ref.renderAll();
 	};
@@ -464,8 +484,14 @@ var flowchartUIController = (function(){
 				subTitleY = titleY + spacing.headerSpacing,
 				c1Y = subTitleY + spacing.objectSpacing,
 				c2Y = c1Y + spacing.paragraphSpacing,
-				c3Y = c2Y + spacing.paragraphSpacing;
-				c4Y = c3Y + spacing.paragraphSpacing;
+				c3Y = c2Y + spacing.paragraphSpacing,
+				c4Y = c3Y + spacing.paragraphSpacing,
+				linePX = o.prevPin.x,
+				linePY = o.prevPin.y,
+				lineCX = o.pinpoints.x,
+				lineCY = o.pinpoints.y;
+
+			console.log(linePX, linePY, lineCX, lineCY);
 
 			// write image
 			this.drawImage(c, o.icon, o.X, o.Y);
@@ -489,8 +515,7 @@ var flowchartUIController = (function(){
 				this.writeMessage(c, o.message, fontX, c4Y);
 
 
-				// draw lines
-					//call lin
+				this.drawLines(c, linePX, linePY, lineCX, lineCY);
 				
 			}
 
@@ -504,6 +529,9 @@ var flowchartUIController = (function(){
 		},
 		drawImage: function(c, i, x, y){
 			imgAdd(c, i, x, y);
+		},
+		drawLines: function(c, px, py, cx, cy){
+			linesToCanvas(c, px, py, cx, cy);
 		},
 		renderFabricCanvas: function(c){
 			renderCanvas(c);
