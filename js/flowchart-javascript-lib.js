@@ -99,13 +99,11 @@ var flowchartDataController = (function(){
 			this.pinpoint = {};
 
 			if(type == "child"){
-				this.pinpoint.top = {};
 				this.pinpoint.x = this.X + icon_half;
 				this.pinpoint.y = this.Y;
 			}else if(type == "sibling"){
-				this.pinpoint.left = {};
-					this.pinpoint.x = this.X;
-					this.pinpoint.y = this.Y + icon_half;
+				this.pinpoint.x = this.X;
+				this.pinpoint.y = this.Y + icon_half;
 			}
 				// this.pinpoint.right = {};
 				// 	this.pinpoint.right.x = this.X + this.icon_width;
@@ -116,15 +114,15 @@ var flowchartDataController = (function(){
 		},
 		previousPinpoint: function(x, y, type){
 			var icon_half = this.icon_width / 2;
+			console.log(type);
+			this.prevPin = {};
 
-			if(type == "sibling"){
-				this.prevPin = {};
-				this.prevPin.x = x + this.icon_width;
-				this.prevPin.y = y + icon_half;
-			}else{
-				this.prevPin = {};
+			if(type == "child"){
 				this.prevPin.x = x + icon_half;
 				this.prevPin.y = y + this.icon_width;
+			}else if(type == "sibling"){
+				this.prevPin.x = x + this.icon_width;
+				this.prevPin.y = y + icon_half;
 			}
 		}
 	};
@@ -203,10 +201,10 @@ var flowchartDataController = (function(){
 		},
 		previousXYForPreviousPinpoint: function(e, obj){
 			var previous = obj.previous,
-				type = obj.type,
+				type = obj.previousType,
 				parentX = flowchartData.parentStructure[previous].pX,
 				parentY = flowchartData.parentStructure[previous].pY;
-
+				
 			this.prevPin(e, parentX, parentY, type);
 		},
 		siblingObj: function(obj){
@@ -436,13 +434,14 @@ var flowchartUIController = (function(){
 	};
 
 	var linesToCanvas = function(c, px, py, cx, cy){
-
-		c.add(makeLine([px,py,cx,cy]));
+		
+		var line = makeLine([px,py,cx,cy]);
+		c.add(line);
 
 		function makeLine(coords){
 			return new fabric.Line(coords, {
-				fill: DOMStrings.color,
-				stroke: DOMStrings.color,
+				fill: DOMStrings.line_color,
+				stroke: DOMStrings.line_color,
 				strokeWidth: DOMStrings.stroke,
 				selectable: false,
 				evented: false
@@ -485,13 +484,7 @@ var flowchartUIController = (function(){
 				c1Y = subTitleY + spacing.objectSpacing,
 				c2Y = c1Y + spacing.paragraphSpacing,
 				c3Y = c2Y + spacing.paragraphSpacing,
-				c4Y = c3Y + spacing.paragraphSpacing,
-				linePX = o.prevPin.x,
-				linePY = o.prevPin.y,
-				lineCX = o.pinpoints.x,
-				lineCY = o.pinpoints.y;
-
-			console.log(linePX, linePY, lineCX, lineCY);
+				c4Y = c3Y + spacing.paragraphSpacing;
 
 			// write image
 			this.drawImage(c, o.icon, o.X, o.Y);
@@ -514,8 +507,16 @@ var flowchartUIController = (function(){
 				//write message
 				this.writeMessage(c, o.message, fontX, c4Y);
 
+				if(o.prevPin == undefined){
 
-				this.drawLines(c, linePX, linePY, lineCX, lineCY);
+				}else{
+					var linePX = o.prevPin.x,
+						linePY = o.prevPin.y,
+						lineCX = o.pinpoint.x,
+						lineCY = o.pinpoint.y;
+
+					this.drawLines(c, linePX, linePY, lineCX, lineCY);
+				}
 				
 			}
 
