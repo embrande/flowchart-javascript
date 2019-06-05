@@ -110,6 +110,19 @@ var flowchartDataController = (function(){
 					this.pinpoint.bottom.y = this.Y + this.icon_width;
 					this.pinpoint.left.x = this.X;
 					this.pinpoint.left.y = this.Y + icon_half;
+		},
+		previousPinpoint: function(x, y, type){
+			var icon_half = this.icon_width / 2;
+
+			if(type == "sibling"){
+				this.prevPin = {};
+				this.prevPin.x = x + this.icon_width;
+				this.prevPin.y = y + icon_half;
+			}else{
+				this.prevPin = {};
+				this.prevPin.x = x + icon_half;
+				this.prevPin.y = y + this.icon_width;
+			}
 		}
 	};
 
@@ -155,10 +168,17 @@ var flowchartDataController = (function(){
 						objFeatures = that.parentObj(e);
 					}
 				}
+
 				that.addToParentStructure(objFeatures);
 				that.objectManipulate(e, objFeatures.x, objFeatures.y);
 				that.objectPinpoints(e);
-				console.log(e.parent);
+
+				// set up previous pinpoints on the preceding object
+				// IE - get the parent name from the object and get the parents stored px and py
+				if(objFeatures.previous == undefined){
+				}else{
+					that.previousXYForPreviousPinpoint(e, objFeatures);
+				}
 			});
 		},
 		addToParentStructure: function(obj){
@@ -178,21 +198,35 @@ var flowchartDataController = (function(){
 				flowchartData.parentStructure[name][key] = obj[key]; 
 			}
 		},
+		previousXYForPreviousPinpoint: function(e, obj){
+			var previous = obj.previous,
+				type = obj.type,
+				parentX = flowchartData.parentStructure[previous].pX,
+				parentY = flowchartData.parentStructure[previous].pY;
+
+			this.prevPin(e, parentX, parentY, type);
+		},
 		siblingObj: function(obj){
 			var x, y,
+				objName = obj.name,
 				siblingName = obj.sibling_name;
 
 			y = this.getXY(siblingName, "pY");
 			x = this.getXY(siblingName, "x") + (flowchartData.distanceX * 2);
 
 			return {
-				name: obj.name,
+				name: objName,
+				previous: siblingName,
+				previousType: "sibling",
 				x: x,
-				y: y
+				y: y,
+				pX: x,
+				pY: y
 			}
 		},
 		parentObj: function(obj){
-			var x, y;
+			var x, y,
+				objName = obj.name;
 
 			y = this.getXY(null, "y");
 			x = flowchartData.globalX;
@@ -200,7 +234,7 @@ var flowchartDataController = (function(){
 			this.increaseGlobalY(flowchartData.distanceY);
 
 			return {
-				name: obj.name,
+				name: objName,
 				x: x,
 				y: y,
 				pX: x,
@@ -220,6 +254,8 @@ var flowchartDataController = (function(){
 
 			return {
 				name: parentName,
+				previous: parentName,
+				previousType: "child",
 				x: x,
 				y: y
 			}
@@ -230,6 +266,9 @@ var flowchartDataController = (function(){
 		},
 		objectPinpoints: function(obj){
 			obj.pinpoints();
+		},
+		prevPin: function(e, x, y, type){
+			e.previousPinpoint(x, y, type);
 		},
 		getXY: function(parentName, dir){
 
