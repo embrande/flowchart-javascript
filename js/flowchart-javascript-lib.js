@@ -88,10 +88,9 @@ var flowchartDataController = (function(){
 	}
 
 	FlowchartArrayMember.prototype = {
-		coordinates: function(x,y,py){
+		coordinates: function(x,y){
 			this.X = x;
 			this.Y = y;
-			this.pY = py;
 		},
 		pinpoints: function(type){
 			//creates pinpoints of middle of each side of the icon for line drawing
@@ -117,7 +116,18 @@ var flowchartDataController = (function(){
 					this.pinpoint.bottom.y = this.Y + this.icon_width;
 		},
 		currentPinpoints: function(type){
+			var icon_half = this.icon_width / 2;
+			this.currPin = {};
 
+			// gets the needed XY of current object. Will only need to get if is a child or sibling
+
+			if(type == "child"){
+				this.currPin.x = this.X + icon_half;
+				this.currPin.y = this.Y;
+			}else if(type == "sibling"){
+				this.currPin.x = this.X;
+				this.currPin.y = this.Y + icon_half;
+			}
 		},
 		previousPinpoint: function(x, y, type){
 			var icon_half = this.icon_width / 2;
@@ -142,6 +152,7 @@ var flowchartDataController = (function(){
 		distanceX: 500,
 		distanceY: 350,
 		distanceChildY: 400,
+		distanceParentY: 200,
 		globalY: 50,
 		globalX: 50,
 		parentStructure: [],
@@ -177,6 +188,10 @@ var flowchartDataController = (function(){
 					that.previousXYForPreviousPinpoint(
 						e, e.parent, "child", "bx", "by"
 					);
+					/*
+						Need to somehow get the one above the current child and pass it
+						maybe add a pName to the child object that will define previous coordinates instead of the parent
+					*/
 				}else{
 					if(e.sibling_name !== ""){
 						// parent sibling
@@ -197,8 +212,8 @@ var flowchartDataController = (function(){
 			// Adds pinpoints to object image for line drawing
 			// Adds to parent structure
 
-			this.objectManipulate(e, objFeatures.x, objFeatures.y, objFeatures.py);
-			var lrbtObject = this.lrbt(e);
+			this.objectManipulate(e, objFeatures.x, objFeatures.y);
+			var lrbtObject = this.lrbt(e, objFeatures.py, objFeatures.objPName);
 			this.addToParentStructure(lrbtObject);
 		},
 		addToParentStructure: function(obj){
@@ -229,10 +244,13 @@ var flowchartDataController = (function(){
 
 			y = flowchartData.globalY;
 			x = flowchartData.globalX;
-			py = y + flowchartData.distanceChildY;
+			py = y + flowchartData.distanceParentY;
+
+			flowchartData.globalY = this.increaseY(flowchartData.globalY, flowchartData.distanceParentY);
 
 			return {
 				name: objName,
+				objPName: objName,
 				x: x,
 				y: y,
 				py: py
@@ -248,8 +266,13 @@ var flowchartDataController = (function(){
 			x = this.getXY(siblingName, "x") + (flowchartData.distanceX * 2);
 			py = y + flowchartData.distanceChildY;
 
+			if(y > flowchartData.globalY){
+				flowchartData.globalY = this.increaseY(flowchartData.globalY, flowchartData.distanceChildY);
+			}
+
 			return {
 				name: objName,
+				objPName: objName,
 				x: x,
 				y: y,
 				py: py
@@ -264,40 +287,43 @@ var flowchartDataController = (function(){
 			y = this.getXY(parentName, "py");
 			x = this.getXY(parentName, "x");
 
-			if(y > flowchartData.globalY){
-				console.log(obj.name);
+			if(y >= flowchartData.globalY){
 				flowchartData.globalY = this.increaseY(flowchartData.globalY, flowchartData.distanceChildY);
+			}else{
+				console.log(obj.name);
 			}
 
 			return {
 				name: objName,
+				objPName: objName,
 				x: x,
 				y: y
 			}
 
 		},
-		lrbt: function(obj){
+		lrbt: function(e, objPy, objPName){
 			return {
-				name: obj.name,
-				x: obj.X,
-				y: obj.Y,
-				py: obj.pY,
-				tx: obj.pinpoint.top.x,
-				ty: obj.pinpoint.top.y,
-				rx: obj.pinpoint.right.x,
-				ry: obj.pinpoint.right.y,
-				bx: obj.pinpoint.bottom.x,
-				by: obj.pinpoint.bottom.y,
-				lx: obj.pinpoint.left.x,
-				ly: obj.pinpoint.left.y
+				name: e.name,
+				x: e.X,
+				y: e.Y,
+				py: objPy,
+				pName: objPName,
+				tx: e.pinpoint.top.x,
+				ty: e.pinpoint.top.y,
+				rx: e.pinpoint.right.x,
+				ry: e.pinpoint.right.y,
+				bx: e.pinpoint.bottom.x,
+				by: e.pinpoint.bottom.y,
+				lx: e.pinpoint.left.x,
+				ly: e.pinpoint.left.y
 			}
 		},
 		increaseParentY: function(p){
 			var parent = p;
 			flowchartData.parentStructure[parent]["py"] = flowchartData.parentStructure[parent]["py"] + flowchartData.distanceChildY;
 		},
-		objectManipulate: function(obj, x, y, py){
-			obj.coordinates(x, y, py);
+		objectManipulate: function(obj, x, y){
+			obj.coordinates(x, y);
 			obj.pinpoints();
 		},
 		objectPinpoints: function(e, obj){
