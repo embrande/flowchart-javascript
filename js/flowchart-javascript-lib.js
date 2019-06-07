@@ -185,8 +185,15 @@ var flowchartDataController = (function(){
 					objFeatures = that.childObj(e);
 					that.parentStructureCombine(e, objFeatures);
 					that.increaseParentY(e.parent);
+
+					// set pinpoints for drawing
+					var prevName = that.lookForParentPrevName(e.parent, "pName");
+					that.setParentPrevName(e.parent, e.name, "pName");
 					that.previousXYForPreviousPinpoint(
-						e, e.parent, "child", "bx", "by"
+						e, prevName, "child", "bx", "by"
+					);
+					that.currentXYForPinpoints(
+						e, "child"
 					);
 					/*
 						Need to somehow get the one above the current child and pass it
@@ -194,11 +201,19 @@ var flowchartDataController = (function(){
 					*/
 				}else{
 					if(e.sibling_name !== ""){
-						// parent sibling
+
+						// parent sibling structure
 						objFeatures = that.siblingObj(e);
 						that.parentStructureCombine(e, objFeatures);
+						console.log()
+						// set pinpoints for drawing
+						var prevName = that.lookForParentPrevName(e.sibling_name, "prevName");
+						that.setParentPrevName(e.sibling_name, e.name, "prevName");
 						that.previousXYForPreviousPinpoint(
-							e, e.sibling_name, "sibling", "rx", "ry"
+							e, prevName, "sibling", "rx", "ry"
+						);
+						that.currentXYForPinpoints(
+							e, "sibling"
 						);
 					}else{
 						objFeatures = that.parentObj(e);
@@ -207,13 +222,23 @@ var flowchartDataController = (function(){
 				}
 			});
 		},
+		lookForParentPrevName: function(parentName, methodName){
+			// get parent
+			// return parent parentLowestChild name
+			var returnParent = flowchartData.parentStructure[parentName][methodName];
+			return returnParent;
+		},
+		setParentPrevName: function(parent, newPrev, methodName){
+			// take parent in parent structure and set objPrevName to the current name
+			flowchartData.parentStructure[parent][methodName] = newPrev;
+		}, 
 		parentStructureCombine: function(e, objFeatures){
 			// Creates XY coordinates
 			// Adds pinpoints to object image for line drawing
 			// Adds to parent structure
 
 			this.objectManipulate(e, objFeatures.x, objFeatures.y);
-			var lrbtObject = this.lrbt(e, objFeatures.py, objFeatures.objPName);
+			var lrbtObject = this.lrbt(e, objFeatures.py, objFeatures.objPName, objFeatures.objPrevName);
 			this.addToParentStructure(lrbtObject);
 		},
 		addToParentStructure: function(obj){
@@ -238,6 +263,9 @@ var flowchartDataController = (function(){
 				parentY = flowchartData.parentStructure[parent][y];
 			this.prevPin(e, parentX, parentY, type);
 		},
+		currentXYForPinpoints: function(e, type){
+			e.currentPinpoints(type);
+		},
 		parentObj: function(obj){
 			var x, y,
 				objName = obj.name;
@@ -250,7 +278,8 @@ var flowchartDataController = (function(){
 
 			return {
 				name: objName,
-				objPName: objName,
+				objPName: objName, // parent name
+				objPrevName: objName,
 				x: x,
 				y: y,
 				py: py
@@ -272,7 +301,8 @@ var flowchartDataController = (function(){
 
 			return {
 				name: objName,
-				objPName: objName,
+				objPName: objName, // parent name
+				objPrevName: objName, // previous name
 				x: x,
 				y: y,
 				py: py
@@ -295,19 +325,21 @@ var flowchartDataController = (function(){
 
 			return {
 				name: objName,
-				objPName: objName,
+				objPName: objName, // parent name
+				objPrevName: objName,
 				x: x,
 				y: y
 			}
 
 		},
-		lrbt: function(e, objPy, objPName){
+		lrbt: function(e, objPy, objPName, objPrevName){
 			return {
 				name: e.name,
 				x: e.X,
 				y: e.Y,
 				py: objPy,
-				pName: objPName,
+				pName: objPName,// parent name
+				prevName: objPrevName,
 				tx: e.pinpoint.top.x,
 				ty: e.pinpoint.top.y,
 				rx: e.pinpoint.right.x,
@@ -573,8 +605,8 @@ var flowchartUIController = (function(){
 				}else{
 					var linePX = o.prevPin.x,
 						linePY = o.prevPin.y,
-						lineCX = o.pinpoint.x,
-						lineCY = o.pinpoint.y;
+						lineCX = o.currPin.x,
+						lineCY = o.currPin.y;
 
 					this.drawLines(c, linePX, linePY, lineCX, lineCY);
 				}
