@@ -60,6 +60,29 @@
 
 
 
+/*
+
+	Check-list:
+		
+		Line color
+
+		Zoom in and out
+
+		Link to eamil and iframe on click
+
+		Remove parent stuff - allow a description
+
+		Location of page UI
+
+		Overflow support
+
+		Table of content location click
+		
+
+
+*/
+
+
 var flowchartDataController = (function(){
 
 	var FlowchartArrayMember = function(obj, io){
@@ -327,7 +350,7 @@ var flowchartDataController = (function(){
 			if(y >= flowchartData.globalY){
 				flowchartData.globalY = this.increaseY(flowchartData.globalY, flowchartData.distanceChildY);
 			}else{
-				console.log(obj.name + "'s Y is not larger than the globalY");
+				// console.log(obj.name + "'s Y is not larger than the globalY");
 			}
 
 			return {
@@ -673,6 +696,11 @@ var flowchartUIController = (function(){
 			objAddedDimensions = objSize(c, o, ts, t);
 
 			return objAddedDimensions;
+		},
+		createControls(c){
+			c.on('mouse:wheel', function(e){
+				console.log(e);
+			});
 		}
 	}
 
@@ -736,6 +764,10 @@ var flowchartAppController = (function(dCon, UICon){
 		UICon.renderFabricCanvas(canvas);
 	};
 
+	var canvasControls = function(){
+		UICon.createControls(canvas);
+	};
+
 
 	return {
 		init: function(id, flowVar){
@@ -744,6 +776,7 @@ var flowchartAppController = (function(dCon, UICon){
 			parentStructure();
 			drawItems();
 			renderCanvas();
+			canvasControls();
 		},
 		addParent: function(){
 
