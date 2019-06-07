@@ -95,6 +95,8 @@ var flowchartDataController = (function(){
 		pinpoints: function(type){
 			//creates pinpoints of middle of each side of the icon for line drawing
 			var icon_half = this.icon_width / 2;
+			console.log(this.img_width);
+			console.log(icon_half);
 
 			this.pinpoint = {};
 			/*
@@ -112,7 +114,7 @@ var flowchartDataController = (function(){
 					this.pinpoint.right.x = this.X + this.icon_width;
 					this.pinpoint.right.y = this.Y + icon_half;
 				this.pinpoint.bottom = {};
-					this.pinpoint.bottom.x = this.X;
+					this.pinpoint.bottom.x = this.X + icon_half;
 					this.pinpoint.bottom.y = this.Y + this.icon_width;
 		},
 		currentPinpoints: function(type){
@@ -131,14 +133,15 @@ var flowchartDataController = (function(){
 		},
 		previousPinpoint: function(x, y, type){
 			var icon_half = this.icon_width / 2;
+
 			this.prevPin = {};
 
 			if(type == "child"){
-				this.prevPin.x = x + icon_half;
-				this.prevPin.y = y + this.icon_width;
+				this.prevPin.x = x;
+				this.prevPin.y = y;
 			}else if(type == "sibling"){
-				this.prevPin.x = x + this.icon_width;
-				this.prevPin.y = y + icon_half;
+				this.prevPin.x = x;
+				this.prevPin.y = y;
 			}
 
 			/*
@@ -205,7 +208,6 @@ var flowchartDataController = (function(){
 						// parent sibling structure
 						objFeatures = that.siblingObj(e);
 						that.parentStructureCombine(e, objFeatures);
-						console.log()
 						// set pinpoints for drawing
 						var prevName = that.lookForParentPrevName(e.sibling_name, "prevName");
 						that.setParentPrevName(e.sibling_name, e.name, "prevName");
@@ -320,7 +322,7 @@ var flowchartDataController = (function(){
 			if(y >= flowchartData.globalY){
 				flowchartData.globalY = this.increaseY(flowchartData.globalY, flowchartData.distanceChildY);
 			}else{
-				console.log(obj.name);
+				console.log(obj.name + "'s Y is not larger than the globalY");
 			}
 
 			return {
@@ -357,10 +359,6 @@ var flowchartDataController = (function(){
 		objectManipulate: function(obj, x, y){
 			obj.coordinates(x, y);
 			obj.pinpoints();
-		},
-		objectPinpoints: function(e, obj){
-			var type = obj.previousType;
-			e.pinpoints(type);
 		},
 		prevPin: function(e, x, y, type){
 			e.previousPinpoint(x, y, type);
@@ -530,6 +528,35 @@ var flowchartUIController = (function(){
 
 		var line = makeLine([px,py,cx,cy]);
 		c.add(line);
+
+
+
+
+		var circle1 = new fabric.Circle({
+			radius: 15,
+			fill: '#4FC3F7',
+			left: cx - 15,
+			top: cy - 15,
+			opacity: 0.7,
+			stroke: 'blue',
+			strokeWidth: 3,
+			strokeUniform: true
+		});
+
+		var circle2 = new fabric.Circle({
+			radius: 15,
+			fill: '#4FC3F7',
+			left: px - 15,
+			top: py - 15,
+			opacity: 0.7,
+			stroke: 'blue',
+			strokeWidth: 3,
+			strokeUniform: true
+		});
+
+		c.add(circle1);
+		c.add(circle2);
+
 
 		function makeLine(coords){
 			return new fabric.Line(coords, {
