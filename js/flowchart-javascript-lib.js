@@ -701,6 +701,17 @@ var flowchartUIController = (function(){
 			c.on('mouse:wheel', function(e){
 				console.log(e);
 			});
+		},
+		zoomInAndOut(canvas, opt){
+			var delta = opt.e.deltaY;
+			var pointer = canvas.getPointer(opt.e);
+			var zoom = canvas.getZoom();
+			zoom = zoom + delta/200;
+			if (zoom > 20) zoom = 20;
+			if (zoom < 0.01) zoom = 0.01;
+			canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+			opt.e.preventDefault();
+			opt.e.stopPropagation();
 		}
 	}
 
@@ -765,7 +776,7 @@ var flowchartAppController = (function(dCon, UICon){
 	};
 
 	var canvasControls = function(){
-		UICon.createControls(canvas);
+		canvas.on('mouse:wheel', function(e){UICon.zoomInAndOut(canvas,e)});
 	};
 
 
