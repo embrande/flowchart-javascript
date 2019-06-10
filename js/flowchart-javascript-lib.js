@@ -448,6 +448,17 @@ var flowchartUIController = (function(){
 		"paragraphSpacing": 18
 	};
 
+	var view = {
+		x:0,
+		y:0
+	};
+
+	var drag = {
+		bool:false,
+		mx:0,
+		my:0,
+	};
+
 
 
 
@@ -606,6 +617,27 @@ var flowchartUIController = (function(){
 		canvas_ref.renderAll();
 	};
 
+	var zInandO = function(canvas, opt){
+		var delta = opt.e.deltaY;
+		var pointer = canvas.getPointer(opt.e);
+		var zoom = canvas.getZoom();
+
+		zoom = zoom + delta/200;
+
+		if (zoom > 10){zoom = 10}
+		if (zoom < 0.4){zoom = .4}
+		canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+		opt.e.preventDefault();
+		opt.e.stopPropagation();
+	};
+
+
+	var mMove = function(canvas,event){
+		if(drag.bool == true){
+			// If clicking and draggin on canvas
+		}
+	};
+
 
 
 
@@ -697,22 +729,18 @@ var flowchartUIController = (function(){
 
 			return objAddedDimensions;
 		},
-		createControls(c){
-			c.on('mouse:wheel', function(e){
-				console.log(e);
-			});
+		zoomInAndOut(c, o){
+			zInandO(c, o);
 		},
-		zoomInAndOut(canvas, opt){
-			var delta = opt.e.deltaY;
-			var pointer = canvas.getPointer(opt.e);
-			var zoom = canvas.getZoom();
-			zoom = zoom + delta/200;
-			if (zoom > 20) zoom = 20;
-			if (zoom < 0.01) zoom = 0.01;
-			canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-			opt.e.preventDefault();
-			opt.e.stopPropagation();
-		}
+		mDown(c,e){
+			drag.bool = true;
+			drag.mx = e.absolutePointer.x;
+			drag.my = e.absolutePointer.y;
+			c.on('mouse:move', function(e){mMove(c,e)});
+		},
+		mUp(c,e){
+			drag.bool = false;
+		},
 	}
 
 })();
@@ -777,6 +805,9 @@ var flowchartAppController = (function(dCon, UICon){
 
 	var canvasControls = function(){
 		canvas.on('mouse:wheel', function(e){UICon.zoomInAndOut(canvas,e)});
+		canvas.on('mouse:down', function(e){UICon.mDown(canvas,e)});
+		
+		canvas.on('mouse:up', function(e){UICon.mUp(canvas,e)});
 	};
 
 
