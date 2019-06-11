@@ -184,6 +184,7 @@ var flowchartDataController = (function(){
 		objects: []
 	};
 
+
 	return {
 		createFlowItem: function(obj){
 			var flowItemObject;
@@ -635,6 +636,10 @@ var flowchartUIController = (function(){
 	var mMove = function(canvas,event){
 		if(drag.bool == true){
 			// If clicking and draggin on canvas
+			// view.x -= drag.mx - event.pointer.x;
+			// view.y -= drag.my - event.pointer.y;
+			drag.mx = event.pointer.x;
+			drag.my = event.pointer.y;
 		}
 	};
 
@@ -733,13 +738,14 @@ var flowchartUIController = (function(){
 			zInandO(c, o);
 		},
 		mDown(c,e){
-			drag.bool = true;
-			drag.mx = e.absolutePointer.x;
-			drag.my = e.absolutePointer.y;
+			this.selection = false;
+			this.lastPosX = evt.clientX;
+			this.lastPosY = evt.clientY;
 			c.on('mouse:move', function(e){mMove(c,e)});
 		},
 		mUp(c,e){
 			drag.bool = false;
+			return [view.x, view.y, drag.mx, drag.my];
 		},
 	}
 
@@ -807,7 +813,15 @@ var flowchartAppController = (function(dCon, UICon){
 		canvas.on('mouse:wheel', function(e){UICon.zoomInAndOut(canvas,e)});
 		canvas.on('mouse:down', function(e){UICon.mDown(canvas,e)});
 		
-		canvas.on('mouse:up', function(e){UICon.mUp(canvas,e)});
+		canvas.on('mouse:up', function(e){
+			var m = UICon.mUp(canvas,e);
+			// take m values
+			// get difference from current top left corner
+			// set new difference as top left X Y
+			// Re-loop data
+			// Re-parentStructure
+			//re-render canvas
+		});
 	};
 
 
@@ -833,5 +847,6 @@ var flowchartAppController = (function(dCon, UICon){
 
 
 window.onload = function(){
+	window.scrollTop;
 	flowchartAppController.init("flowchart-stage", flowchartStage);
 }
