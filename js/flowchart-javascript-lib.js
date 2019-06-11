@@ -66,18 +66,19 @@
 		
 		Line color
 
-		Zoom in and out
-
-		Link to eamil and iframe on click
+		Link to email and iframe on click
 
 		Remove parent stuff - allow a description
 
 		Location of page UI
 
-		Overflow support
-
 		Table of content location click
-		
+			key press support
+			TOC text press
+
+		Accessibility support
+
+		Mobile tablet pan support
 
 
 */
@@ -121,11 +122,6 @@ var flowchartDataController = (function(){
 			var icon_buffer = 25;
 
 			this.pinpoint = {};
-			/*
-				When here I'm looking for 
-					the current needed position (left, right, bottom, top);
-					assign it's X and Y to the pinpoint X Y
-			*/
 				this.pinpoint.top = {};
 					this.pinpoint.top.x = this.X + icon_half;
 					this.pinpoint.top.y = this.Y - icon_buffer;
@@ -142,8 +138,6 @@ var flowchartDataController = (function(){
 		currentPinpoints: function(x, y, type){
 			var icon_half = this.icon_width / 2;
 			this.currPin = {};
-
-			// gets the needed XY of current object. Will only need to get if is a child or sibling
 
 			if(type == "child"){
 				this.currPin.x = x;
@@ -165,18 +159,13 @@ var flowchartDataController = (function(){
 				this.prevPin.x = x;
 				this.prevPin.y = y;
 			}
-
-			/*
-				When here I'm looking fo
-					the previous needed position (left, right, bottom, top)
-			*/
 		}
 	};
 
 	var flowchartData = {
 		distanceX: 1000,
 		distanceY: 350,
-		distanceChildY: 400,
+		distanceChildY: 450,
 		distanceParentY: 200,
 		globalY: 50,
 		globalX: 50,
@@ -221,10 +210,6 @@ var flowchartDataController = (function(){
 					that.currentXYForPinpoints(
 						e, "child", "tx", "ty"
 					);
-					/*
-						Need to somehow get the one above the current child and pass it
-						maybe add a pName to the child object that will define previous coordinates instead of the parent
-					*/
 				}else{
 					if(e.sibling_name !== ""){
 
@@ -324,10 +309,10 @@ var flowchartDataController = (function(){
 
 			y = this.getXY(siblingName, "y");
 			x = this.getXY(siblingName, "px");
-			py = y + flowchartData.distanceChildY;
+			py = y + flowchartData.distanceParentY;
 
 			if(y > flowchartData.globalY){
-				flowchartData.globalY = this.increaseY(flowchartData.globalY, flowchartData.distanceChildY);
+				flowchartData.globalY = this.increaseY(flowchartData.globalY, flowchartData.distanceParentY);
 			}
 
 			return {
@@ -433,7 +418,9 @@ var flowchartUIController = (function(){
 		"context": "2d",
 		"parentSize": 75,
 		"parent_font": "BentonSans",
-		"parent_font_size": 22,
+		"parent_font_size": 56,
+		"child_title_font": "BentonSans",
+		"child_title_size": 24,
 		"child_font": "BentonSans",
 		"child_font_size": 18,
 		"paragraph_font": "BentonSans",
@@ -449,15 +436,8 @@ var flowchartUIController = (function(){
 		"paragraphSpacing": 18
 	};
 
-	var view = {
-		x:0,
-		y:0
-	};
-
 	var drag = {
-		bool:false,
-		mx:0,
-		my:0,
+		bool:false
 	};
 
 
@@ -527,7 +507,8 @@ var flowchartUIController = (function(){
 				'lockScalingY': true,
 				'lockRotation': true,
 				'hasControls': false,
-				'hasBorders': false
+				'hasBorders': false,
+				'selectable': false
 			});
 			img.scaleToWidth(DOMStrings.parentSize);
 
@@ -547,13 +528,37 @@ var flowchartUIController = (function(){
 			'lockScalingY': true,
 			'lockRotation': true,
 			'hasControls': false,
-			'hasBorders': false
+			'hasBorders': false,
+			'selectable': false
 		});
 
 		canvas_ref.add(text);
 	};
 
-	var writeMessageToCanvas = function(canvas_ref, message, x, y){
+	var textAddSelectable = function(canvas_ref, copy, link, fontsFamily, fonts, x, y, email){
+		var text = new fabric.Text(copy,{
+			'left': x,
+			'top': y,
+			'fontSize': fonts,
+			'lockMovementX': true,
+			'lockMovementY': true,
+			'lockScalingX': true,
+			'lockScalingY': true,
+			'lockRotation': true,
+			'hasControls': false,
+			'hasBorders': false,
+			'selectable': true
+		});
+
+		text.on('selected', function(){
+			console.log(link);
+			canvas_ref.discardActiveObject();
+		});
+
+		canvas_ref.add(text);
+	};
+
+	var writeMessageToCanvas = function(canvas_ref, message, link, x, y){
 		var pArray = paragraphToArray(canvas_ref, message);
 		var ySpacing = y;
 		pArray.forEach(function(ob) {
@@ -567,6 +572,9 @@ var flowchartUIController = (function(){
 				// Push a link to see the whole email here
 			}
 		});
+
+		ySpacing = ySpacing + spacing['paragraphSpacing'];
+		textAddSelectable(canvas_ref, "See message", link, DOMStrings['paragraph_font'], DOMStrings['child_font_size'], x, ySpacing);
 	};
 
 	var linesToCanvas = function(c, px, py, cx, cy){
@@ -585,7 +593,8 @@ var flowchartUIController = (function(){
 			opacity: 0.7,
 			stroke: 'blue',
 			strokeWidth: 3,
-			strokeUniform: true
+			strokeUniform: true,
+			selectable: false
 		});
 
 		var circle2 = new fabric.Circle({
@@ -596,7 +605,8 @@ var flowchartUIController = (function(){
 			opacity: 0.7,
 			stroke: 'blue',
 			strokeWidth: 3,
-			strokeUniform: true
+			strokeUniform: true,
+			selectable: false
 		});
 
 		c.add(circle1);
@@ -619,28 +629,35 @@ var flowchartUIController = (function(){
 	};
 
 	var zInandO = function(canvas, opt){
-		var delta = opt.e.deltaY;
-		var pointer = canvas.getPointer(opt.e);
-		var zoom = canvas.getZoom();
+		if(opt.e.ctrlKey === true){
+			var delta = opt.e.deltaY;
+			var pointer = canvas.getPointer(opt.e);
+			var zoom = canvas.getZoom();
 
-		zoom = zoom + delta/200;
+			zoom = zoom + delta/200;
 
-		if (zoom > 10){zoom = 10}
-		if (zoom < 0.4){zoom = .4}
-		canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-		opt.e.preventDefault();
-		opt.e.stopPropagation();
+			if (zoom > 10){zoom = 10}
+			if (zoom < 0.4){zoom = .4}
+			canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+			opt.e.preventDefault();
+			opt.e.stopPropagation();
+		}
 	};
 
 
-	var mMove = function(canvas,event){
+	var mMove = function(canvas, event, eventThis){
+		var e = event.e;
 		if(drag.bool == true){
-			// If clicking and draggin on canvas
-			// view.x -= drag.mx - event.pointer.x;
-			// view.y -= drag.my - event.pointer.y;
-			drag.mx = event.pointer.x;
-			drag.my = event.pointer.y;
+			eventThis.viewportTransform[4] += e.clientX - eventThis.lastPosX;
+			eventThis.viewportTransform[5] += e.clientY - eventThis.lastPosY;
+			eventThis.requestRenderAll();
+			eventThis.lastPosX = e.clientX;
+			eventThis.lastPosY = e.clientY;
 		}
+	};
+
+	var mBarContainer = function(can, dir){
+		var menuItem = "<div class='canvas-menu-" + dir + "'><div>Menu</div</div>";
 	};
 
 
@@ -679,13 +696,15 @@ var flowchartUIController = (function(){
 			// write image
 			this.drawImage(c, o.icon, o.X, o.Y);
 
-			// write title
-			this.drawText(c, o.title, DOMStrings["parent_font"], DOMStrings["parent_font_size"], fontX, titleY);
+			if(o.parent == ""){
+				// don't attempt to write out a message if is a parent// write subtitle
+				// write title
+				this.drawText(c, o.title, DOMStrings["parent_font"], DOMStrings["parent_font_size"], fontX, titleY);
 
-
-			if(o.isParent){
-				// don't attempt to write out a message if is a parent
 			}else{
+				// write title
+				this.drawText(c, o.title, DOMStrings["child_title_font"], DOMStrings["child_title_size"], fontX, titleY);
+
 				// write subtitle
 				this.drawText(c, o.subtitle, DOMStrings["child_font"], DOMStrings["child_font_size"], fontX, subTitleY);
 
@@ -695,24 +714,24 @@ var flowchartUIController = (function(){
 				this.drawText(c, "Method: " + o.type, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c3Y);
 
 				//write message
-				this.writeMessage(c, o.message, fontX, c4Y);
+				this.writeMessage(c, o.message, o.link, fontX, c4Y);
 
-				if(o.prevPin == undefined){
-
-				}else{
-					var linePX = o.prevPin.x,
-						linePY = o.prevPin.y,
-						lineCX = o.currPin.x,
-						lineCY = o.currPin.y;
-
-					this.drawLines(c, linePX, linePY, lineCX, lineCY);
-				}
 				
 			}
 
+			if(o.prevPin == undefined){
+
+			}else{
+				var linePX = o.prevPin.x,
+					linePY = o.prevPin.y,
+					lineCX = o.currPin.x,
+					lineCY = o.currPin.y;
+
+				this.drawLines(c, linePX, linePY, lineCX, lineCY);
+			}
 		},
-		writeMessage: function(c, m, x, y){
-			writeMessageToCanvas(c, m, x, y);
+		writeMessage: function(c, m, l, x, y){
+			writeMessageToCanvas(c, m, l, x, y);
 		},
 		drawText: function(c, co, ff, f, x, y){
 			// create method that counts every certain word and breaks the texts
@@ -737,16 +756,23 @@ var flowchartUIController = (function(){
 		zoomInAndOut(c, o){
 			zInandO(c, o);
 		},
-		mDown(c,e){
-			this.selection = false;
-			this.lastPosX = evt.clientX;
-			this.lastPosY = evt.clientY;
-			c.on('mouse:move', function(e){mMove(c,e)});
+		mDown(c,e,et){
+			var evt = e.e;
+			if(evt.altKey === true){
+				drag.bool = true;
+			    et.selection = false;
+			    et.lastPosX = evt.clientX;
+			    et.lastPosY = evt.clientY;
+				c.on('mouse:move', function(e){mMove(c,e,this)});
+			}
 		},
-		mUp(c,e){
-			drag.bool = false;
-			return [view.x, view.y, drag.mx, drag.my];
+		mUp(et){
+   	 		drag.bool = false;
+			et.selection = true;
 		},
+		menuCreate(c,d){
+			mBarContainer(c);
+		}
 	}
 
 })();
@@ -811,18 +837,14 @@ var flowchartAppController = (function(dCon, UICon){
 
 	var canvasControls = function(){
 		canvas.on('mouse:wheel', function(e){UICon.zoomInAndOut(canvas,e)});
-		canvas.on('mouse:down', function(e){UICon.mDown(canvas,e)});
+		canvas.on('mouse:down', function(e){UICon.mDown(canvas,e, this);});
 		
 		canvas.on('mouse:up', function(e){
-			var m = UICon.mUp(canvas,e);
-			// take m values
-			// get difference from current top left corner
-			// set new difference as top left X Y
-			// Re-loop data
-			// Re-parentStructure
-			//re-render canvas
+			var m = UICon.mUp(this);
 		});
 	};
+
+	var menuCreation = function(){UICon.menuCreate(canvas)};
 
 
 	return {
@@ -839,6 +861,9 @@ var flowchartAppController = (function(dCon, UICon){
 		},
 		addChild: function(){
 
+		},
+		createMenu: function(){
+			menuCreation();
 		}
 	}
 
@@ -849,4 +874,5 @@ var flowchartAppController = (function(dCon, UICon){
 window.onload = function(){
 	window.scrollTop;
 	flowchartAppController.init("flowchart-stage", flowchartStage);
+	flowchartAppController.createMenu();
 }
