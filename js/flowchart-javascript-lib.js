@@ -551,7 +551,11 @@ var flowchartUIController = (function(){
 		});
 
 		text.on('selected', function(){
-			console.log(link);
+			// following relys on jquery and lightweight javascript
+			$.featherlight(link, {
+
+			});
+
 			canvas_ref.discardActiveObject();
 		});
 
