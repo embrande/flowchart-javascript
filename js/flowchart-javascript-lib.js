@@ -549,6 +549,8 @@ var flowchartUIController = (function(){
 			'hasBorders': false,
 			'selectable': true
 		});
+		console.log(text);
+		text.onSelect(function(){console.log("testing")});
 
 		text.on('selected', function(){
 			// following relys on jquery and lightweight javascript
