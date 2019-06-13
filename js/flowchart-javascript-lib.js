@@ -549,8 +549,6 @@ var flowchartUIController = (function(){
 			'hasBorders': false,
 			'selectable': true
 		});
-		console.log(text);
-		text.onSelect(function(){console.log("testing")});
 
 		text.on('selected', function(){
 			// following relys on jquery and lightweight javascript
@@ -635,10 +633,11 @@ var flowchartUIController = (function(){
 	};
 
 	var zInandO = function(canvas, opt){
-		if(opt.e.ctrlKey === true){
 			var delta = opt.e.deltaY;
 			var pointer = canvas.getPointer(opt.e);
 			var zoom = canvas.getZoom();
+
+			console.log(delta);
 
 			zoom = zoom + delta/200;
 
@@ -647,7 +646,6 @@ var flowchartUIController = (function(){
 			canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
 			opt.e.preventDefault();
 			opt.e.stopPropagation();
-		}
 	};
 
 
@@ -659,6 +657,11 @@ var flowchartUIController = (function(){
 			eventThis.requestRenderAll();
 			eventThis.lastPosX = e.clientX;
 			eventThis.lastPosY = e.clientY;
+
+			console.log(event.e.deltaY);
+
+			event.e.preventDefault();
+			event.e.stopPropagation();
 		}
 	};
 
@@ -759,8 +762,10 @@ var flowchartUIController = (function(){
 
 			return objAddedDimensions;
 		},
-		zoomInAndOut(c, o){
-			zInandO(c, o);
+		zoomInAndOut(c, e){
+			if(e.e.ctrlKey === true){
+				zInandO(c, e);
+			}
 		},
 		mDown(c,e,et){
 			var evt = e.e;
