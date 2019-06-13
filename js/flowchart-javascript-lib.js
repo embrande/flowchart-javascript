@@ -508,7 +508,8 @@ var flowchartUIController = (function(){
 				'lockRotation': true,
 				'hasControls': false,
 				'hasBorders': false,
-				'selectable': false
+				'selectable': false,
+				'hoverCursor': 'arrow'
 			});
 			img.scaleToWidth(DOMStrings.parentSize);
 
@@ -529,7 +530,8 @@ var flowchartUIController = (function(){
 			'lockRotation': true,
 			'hasControls': false,
 			'hasBorders': false,
-			'selectable': false
+			'selectable': false,
+			'hoverCursor': 'arrow'
 		});
 
 		canvas_ref.add(text);
@@ -547,7 +549,10 @@ var flowchartUIController = (function(){
 			'lockRotation': true,
 			'hasControls': false,
 			'hasBorders': false,
-			'selectable': true
+			'selectable': true, 
+			'font-family': "BentonSans",
+			'underline': true,
+			'hoverCursor': 'pointer'
 		});
 
 		text.on('selected', function(){
@@ -565,6 +570,8 @@ var flowchartUIController = (function(){
 	var writeMessageToCanvas = function(canvas_ref, message, link, x, y){
 		var pArray = paragraphToArray(canvas_ref, message);
 		var ySpacing = y;
+		var overflow = false;
+
 		pArray.forEach(function(ob) {
 			// Write ob to  canvas
 			// maybe writeParagraph(ob, x, y)
@@ -572,10 +579,14 @@ var flowchartUIController = (function(){
 				textAdd(canvas_ref, ob, DOMStrings['paragraph_font'], DOMStrings['paragraph_font_size'], x, ySpacing);
 				ySpacing = ySpacing + spacing['paragraphSpacing'];
 			}else{
-
-				// Push a link to see the whole email here
+				overflow = true;
 			}
 		});
+
+		if(overflow === true){
+			textAdd(canvas_ref, "...", DOMStrings['paragraph_font'], DOMStrings['paragraph_font_size'], x, ySpacing);
+				
+		}
 
 		ySpacing = ySpacing + spacing['paragraphSpacing'];
 		textAddSelectable(canvas_ref, "See message", link, DOMStrings['paragraph_font'], DOMStrings['child_font_size'], x, ySpacing);
@@ -598,7 +609,8 @@ var flowchartUIController = (function(){
 			stroke: 'blue',
 			strokeWidth: 3,
 			strokeUniform: true,
-			selectable: false
+			selectable: false,
+			'hoverCursor': 'arrow'
 		});
 
 		var circle2 = new fabric.Circle({
@@ -610,7 +622,8 @@ var flowchartUIController = (function(){
 			stroke: 'blue',
 			strokeWidth: 3,
 			strokeUniform: true,
-			selectable: false
+			selectable: false,
+			'hoverCursor': 'arrow'
 		});
 
 		c.add(circle1);
@@ -637,8 +650,6 @@ var flowchartUIController = (function(){
 			var pointer = canvas.getPointer(opt.e);
 			var zoom = canvas.getZoom();
 
-			console.log(delta);
-
 			zoom = zoom + delta/200;
 
 			if (zoom > 10){zoom = 10}
@@ -658,7 +669,11 @@ var flowchartUIController = (function(){
 			eventThis.lastPosX = e.clientX;
 			eventThis.lastPosY = e.clientY;
 
-			console.log(event.e.deltaY);
+			var zoom = canvas.getZoom();
+			canvas.zoomToPoint({
+				x: event.e.offsetX,
+				y: event.e.offsetY
+			}, zoom);
 
 			event.e.preventDefault();
 			event.e.stopPropagation();
@@ -666,7 +681,18 @@ var flowchartUIController = (function(){
 	};
 
 	var mBarContainer = function(can, dir){
-		var menuItem = "<div class='canvas-menu-" + dir + "'><div>Menu</div</div>";
+		// var menuItem = "<div id='canvas-menu-" + dir + "'><div>Menu</div</div>";
+		var menuContainer = document.createElement('div');
+			menuContainer.id = "canvas-menu-" + dir;
+			menuContainer.classList.add("canvas-menu-container");
+			menuContainer.classList.add("canvas-menu-closed");
+		var menuButton = document.createElement('div');
+			menuButton.id = "canvas-menu-button";
+
+		menuContainer.append(menuButton);
+
+		parent = document.getElementById(can.pNode.id);
+		parent.insertAdjacentElement('beforeend', menuContainer);
 	};
 
 
@@ -782,7 +808,7 @@ var flowchartUIController = (function(){
 			et.selection = true;
 		},
 		menuCreate(c,d){
-			mBarContainer(c);
+			mBarContainer(c,d);
 		}
 	}
 
@@ -855,7 +881,7 @@ var flowchartAppController = (function(dCon, UICon){
 		});
 	};
 
-	var menuCreation = function(){UICon.menuCreate(canvas)};
+	var menuCreation = function(direction){UICon.menuCreate(canvas,direction)};
 
 
 	return {
@@ -873,8 +899,8 @@ var flowchartAppController = (function(dCon, UICon){
 		addChild: function(){
 
 		},
-		createMenu: function(){
-			menuCreation();
+		createMenu: function(direction){
+			menuCreation(direction);
 		}
 	}
 
@@ -885,5 +911,5 @@ var flowchartAppController = (function(dCon, UICon){
 window.onload = function(){
 	window.scrollTop;
 	flowchartAppController.init("flowchart-stage", flowchartStage);
-	flowchartAppController.createMenu();
+	flowchartAppController.createMenu('top');
 }
