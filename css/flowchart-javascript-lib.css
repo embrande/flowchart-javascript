@@ -2,14 +2,18 @@
 
 }
 #canvas-menu-top{
-	width: 40vh;
+	width: 100vh;
 	height: 75px;
 	background-color: #EDEBEB;
 	background: #EDEBEB;
 	position: absolute;
 	top: 0;
 	left: 0;
+	border-bottom-right-radius: 40px;
 }
+	#canvas-menu-top.canvas-menu-closed {
+		top: -75px;
+	}
 #canvas-menu-right{
 
 }
@@ -28,4 +32,32 @@
 		background: #EDEBEB;
 		width: 50px;
 		height: 50px;
+		cursor: pointer;
 	}
+
+		.canvas-menu-button-inner {
+			background-color: inherit;
+			position: absolute;
+			left:50%;
+			top:50%;
+			transform: translate(-50%, -50%);
+			font-size: 30px;
+			font-weight: 700;
+		    display: inline-block;
+		    border: none;
+		    text-decoration: none;
+		    color: #000;
+		    line-height: 1;
+		    cursor: pointer;
+		    transition: background 250ms ease-in-out, transform 150ms ease;
+		    -webkit-appearance: none;
+		    -moz-appearance: none;
+		}
+		.canvas-menu-button-inner:focus,
+		.canvas-menu-button-inner:selected {
+			border: none;
+			text-decoration: none;
+   			outline-offset: -4px;
+   			border-color: #EDEBEB;
+		}
+		

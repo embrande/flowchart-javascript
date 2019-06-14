@@ -597,9 +597,6 @@ var flowchartUIController = (function(){
 		var line = makeLine([px,py,cx,cy]);
 		c.add(line);
 
-
-
-
 		var circle1 = new fabric.Circle({
 			radius: 15,
 			fill: '#4FC3F7',
@@ -646,17 +643,17 @@ var flowchartUIController = (function(){
 	};
 
 	var zInandO = function(canvas, opt){
-			var delta = opt.e.deltaY;
-			var pointer = canvas.getPointer(opt.e);
-			var zoom = canvas.getZoom();
+		var delta = opt.e.deltaY;
+		var pointer = canvas.getPointer(opt.e);
+		var zoom = canvas.getZoom();
 
-			zoom = zoom + delta/200;
+		zoom = zoom + delta/200;
 
-			if (zoom > 10){zoom = 10}
-			if (zoom < 0.4){zoom = .4}
-			canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-			opt.e.preventDefault();
-			opt.e.stopPropagation();
+		if (zoom > 10){zoom = 10}
+		if (zoom < 0.4){zoom = .4}
+		canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+		opt.e.preventDefault();
+		opt.e.stopPropagation();
 	};
 
 
@@ -680,16 +677,45 @@ var flowchartUIController = (function(){
 		}
 	};
 
+	var reset = function(canvas){
+		canvas.zoomToPoint({
+			x: 0,
+			y: 0
+		}, 1.0); 
+		console.log(canvas.zoomToPoint);
+	};
+
 	var mBarContainer = function(can, dir){
 		// var menuItem = "<div id='canvas-menu-" + dir + "'><div>Menu</div</div>";
 		var menuContainer = document.createElement('div');
 			menuContainer.id = "canvas-menu-" + dir;
 			menuContainer.classList.add("canvas-menu-container");
 			menuContainer.classList.add("canvas-menu-closed");
-		var menuButton = document.createElement('div');
-			menuButton.id = "canvas-menu-button";
+		var menuButtonContainer = document.createElement('div');
+			menuButtonContainer.id = "canvas-menu-button";
+		var menuButtonInner = document.createElement('button');
+			menuButtonInner.innerHTML = "&equiv;";
+			menuButtonInner.classList.add("canvas-menu-button-inner");
+		var menuUL = document.createElement('ul');
+			menuUL.classList.add('canvas-menu-ul');
+			var menuLIReset = document.createElement('li');
+				var menuLIResetAHref = document.createElement('a');
+				menuLIReset.append(menuLIResetAHref);
+				menuLIResetAHref.innerHTML = 'Reset';
+		
+		menuUL.append(menuLIReset);
 
-		menuContainer.append(menuButton);
+		menuButtonContainer.append(menuButtonInner);
+		menuContainer.append(menuButtonContainer);
+		menuContainer.append(menuUL);
+
+		menuLIResetAHref.addEventListener('click', function(e){
+			e.preventDefault();
+			reset(can);
+		});
+		menuButtonInner.addEventListener('click', function(e){
+			this.parentNode.parentNode.classList.toggle('canvas-menu-closed');
+		});
 
 		parent = document.getElementById(can.pNode.id);
 		parent.insertAdjacentElement('beforeend', menuContainer);
