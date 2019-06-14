@@ -440,6 +440,8 @@ var flowchartUIController = (function(){
 		bool:false
 	};
 
+	var menu = [{}];
+
 
 
 
@@ -700,9 +702,14 @@ var flowchartUIController = (function(){
 			menuUL.classList.add('canvas-menu-ul');
 			var menuLIReset = document.createElement('li');
 				var menuLIResetAHref = document.createElement('a');
-				menuLIReset.append(menuLIResetAHref);
 				menuLIResetAHref.innerHTML = 'Reset';
+				menuLIReset.append(menuLIResetAHref);
+			var menuLIMenu = document.createElement('li');
+				var menuLIMenuAHref = document.createElement('a');
+				menuLIMenuAHref.innerHTML = 'Menu';
+				menuLIMenu.append(menuLIMenuAHref);
 		
+		menuUL.append(menuLIMenu);
 		menuUL.append(menuLIReset);
 
 		menuButtonContainer.append(menuButtonInner);
@@ -761,6 +768,16 @@ var flowchartUIController = (function(){
 				// don't attempt to write out a message if is a parent// write subtitle
 				// write title
 				this.drawText(c, o.title, DOMStrings["parent_font"], DOMStrings["parent_font_size"], fontX, titleY);
+
+
+				// create parent and sibling structure for menu
+				if(o.sibling_name == ""){
+					menu[o.name] = [];
+					menu[o.name].push({name: o.name, type: "parent"});
+				}else{
+					menu[o.sibling_name].push({name: "o.name", type: "sibling"});
+				}
+
 
 			}else{
 				// write title
