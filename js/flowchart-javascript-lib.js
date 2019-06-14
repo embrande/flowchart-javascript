@@ -688,7 +688,7 @@ var flowchartUIController = (function(){
 	var mBarContainer = function(can, dir){
 		// var menuItem = "<div id='canvas-menu-" + dir + "'><div>Menu</div</div>";
 		var menuContainer = document.createElement('div');
-			menuContainer.id = "canvas-menu-" + dir;
+			menuContainer.classList.add("canvas-menu-" + dir);
 			menuContainer.classList.add("canvas-menu-container");
 			menuContainer.classList.add("canvas-menu-closed");
 		var menuButtonContainer = document.createElement('div');
