@@ -68,7 +68,7 @@
 
 		Link to email and iframe on click
 
-		Remove parent stuff - allow a description
+		Allow a description on parent / sibling object
 
 		Location of page UI
 
@@ -77,9 +77,6 @@
 			TOC text press
 
 		Accessibility support
-
-		Mobile tablet pan support
-
 
 */
 
@@ -689,6 +686,12 @@ var flowchartUIController = (function(){
 
 	var mBarContainer = function(can, dir){
 		// var menuItem = "<div id='canvas-menu-" + dir + "'><div>Menu</div</div>";
+		var menuAccess = document.createElement('nav');
+			menuAccess.setAttribute('aria-labelledby', 'mainMenuLabel');
+		var menuLabel = document.createElement('h2');
+			menuLabel.id = "mainMenuLabel";
+			menuLabel.innerHTML = "Interactive timeline navigation";
+			menuLabel.classList.add('visuallyHidden');
 		var menuContainer = document.createElement('div');
 			menuContainer.classList.add("canvas-menu-" + dir);
 			menuContainer.classList.add("canvas-menu-container");
@@ -715,6 +718,8 @@ var flowchartUIController = (function(){
 		menuButtonContainer.append(menuButtonInner);
 		menuContainer.append(menuButtonContainer);
 		menuContainer.append(menuUL);
+		menuAccess.append(menuLabel);
+		menuAccess.append(menuContainer);
 
 		menuLIResetAHref.addEventListener('click', function(e){
 			e.preventDefault();
@@ -725,7 +730,7 @@ var flowchartUIController = (function(){
 		});
 
 		parent = document.getElementById(can.pNode.id);
-		parent.insertAdjacentElement('beforeend', menuContainer);
+		parent.insertAdjacentElement('beforeend', menuAccess);
 	};
 
 
