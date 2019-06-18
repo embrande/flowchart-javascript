@@ -956,8 +956,5 @@ var flowchartAppController = (function(dCon, UICon){
 
 
 
-window.onload = function(){
-	window.scrollTop;
-	flowchartAppController.init("flowchart-stage", flowchartStage);
-	flowchartAppController.createMenu('top');
-}
+flowchartAppController.init("flowchart-stage", flowchartStage);
+flowchartAppController.createMenu('top');
