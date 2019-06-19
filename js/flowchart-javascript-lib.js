@@ -722,10 +722,12 @@ var flowchartUIController = (function(){
 
 		menuLIResetAHref.addEventListener('click', function(e){
 			e.preventDefault();
+			e.stopImmediatePropagation();
 			reset(can);
 		});
 		menuLIMenuAHref.addEventListener('click', function(e){
 			e.preventDefault();
+			e.stopImmediatePropagation();
 			menuFunc(menuLIMenu);
 		});
 
