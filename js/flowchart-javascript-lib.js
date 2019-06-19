@@ -437,7 +437,7 @@ var flowchartUIController = (function(){
 		bool:false
 	};
 
-	var menu = [{}];
+	var menus = [];
 
 
 
@@ -715,22 +715,28 @@ var flowchartUIController = (function(){
 		menuUL.append(menuLIMenu);
 		menuUL.append(menuLIReset);
 
+		menuContainer.append(menuUL);
 		menuButtonContainer.append(menuButtonInner);
 		menuContainer.append(menuButtonContainer);
-		menuContainer.append(menuUL);
-		menuAccess.append(menuLabel);
-		menuAccess.append(menuContainer);
 
 		menuLIResetAHref.addEventListener('click', function(e){
 			e.preventDefault();
 			reset(can);
+		});
+		menuLIMenuAHref.addEventListener('click', function(e){
+			e.preventDefault();
+			menuFunc(can);
 		});
 		menuButtonInner.addEventListener('click', function(e){
 			this.parentNode.parentNode.classList.toggle('canvas-menu-closed');
 		});
 
 		parent = document.getElementById(can.pNode.id);
-		parent.insertAdjacentElement('beforeend', menuAccess);
+		parent.insertAdjacentElement('beforeend', menuContainer);
+	};
+
+	var menuFunc = function(canvas){
+		console.log(menus);
 	};
 
 
@@ -777,10 +783,11 @@ var flowchartUIController = (function(){
 
 				// create parent and sibling structure for menu
 				if(o.sibling_name == ""){
-					menu[o.name] = [];
-					menu[o.name].push({name: o.name, type: "parent"});
+					menus[o.name] = [];
+					menus[o.name].push({name: o.name, type: "parent"});
 				}else{
-					menu[o.sibling_name].push({name: "o.name", type: "sibling"});
+					menus[o.sibling_name].push({name: "o.name", type: "sibling"});
+
 				}
 
 
