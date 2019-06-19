@@ -686,12 +686,12 @@ var flowchartUIController = (function(){
 
 	var mBarContainer = function(can, dir){
 		// var menuItem = "<div id='canvas-menu-" + dir + "'><div>Menu</div</div>";
-		var menuAccess = document.createElement('nav');
-			menuAccess.setAttribute('aria-labelledby', 'mainMenuLabel');
-		var menuLabel = document.createElement('h2');
-			menuLabel.id = "mainMenuLabel";
-			menuLabel.innerHTML = "Interactive timeline navigation";
-			menuLabel.classList.add('visuallyHidden');
+		// var menuAccess = document.createElement('nav');
+		// 	menuAccess.setAttribute('aria-labelledby', 'mainMenuLabel');
+		// var menuLabel = document.createElement('h2');
+		// 	menuLabel.id = "mainMenuLabel";
+		// 	menuLabel.innerHTML = "Interactive timeline navigation";
+		// 	menuLabel.classList.add('visuallyHidden');
 		var menuContainer = document.createElement('div');
 			menuContainer.classList.add("canvas-menu-" + dir);
 			menuContainer.classList.add("canvas-menu-container");
@@ -725,7 +725,7 @@ var flowchartUIController = (function(){
 		});
 		menuLIMenuAHref.addEventListener('click', function(e){
 			e.preventDefault();
-			menuFunc(can);
+			menuFunc(can, menuLIMenu);
 		});
 		menuButtonInner.addEventListener('click', function(e){
 			this.parentNode.parentNode.classList.toggle('canvas-menu-closed');
@@ -735,8 +735,24 @@ var flowchartUIController = (function(){
 		parent.insertAdjacentElement('beforeend', menuContainer);
 	};
 
-	var menuFunc = function(canvas){
-		console.log(menus);
+	var menuFunc = function(canvas, menuObj){
+
+		var subMenu = document.createElement("ul");
+			subMenu.id = ("menuSubMenu");
+
+		for(var i in menus){
+			var subMenuLi = document.createElement("li");
+				subMenuLi.innerHTML = i;
+			var subSubMenu = document.createElement("ul");
+			for(var ii in menus[i]){
+				var subSubMenuLi = document.createElement("li");
+					subSubMenuLi.innerHTML = menus[i][ii]["name"];
+				subMenuLi.append(subSubMenuLi);
+			}
+			subMenu.append(subMenuLi);
+		}
+
+		menuObj.append(subMenu);
 	};
 
 
@@ -784,9 +800,9 @@ var flowchartUIController = (function(){
 				// create parent and sibling structure for menu
 				if(o.sibling_name == ""){
 					menus[o.name] = [];
-					menus[o.name].push({name: o.name, type: "parent"});
+					menus[o.name].push({name: o.title, type: "parent"});
 				}else{
-					menus[o.sibling_name].push({name: "o.name", type: "sibling"});
+					menus[o.sibling_name].push({name: o.title, type: "sibling"});
 
 				}
 
