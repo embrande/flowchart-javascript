@@ -677,11 +677,12 @@ var flowchartUIController = (function(){
 	};
 
 	var reset = function(canvas){
+		canvas.viewportTransform[4] = 50;
+		canvas.viewportTransform[5] = 50;
 		canvas.zoomToPoint({
 			x: 0,
 			y: 0
 		}, 1.0); 
-		console.log(canvas.zoomToPoint);
 	};
 
 	var mBarContainer = function(can, dir){
@@ -725,8 +726,9 @@ var flowchartUIController = (function(){
 		});
 		menuLIMenuAHref.addEventListener('click', function(e){
 			e.preventDefault();
-			menuFunc(can, menuLIMenu);
+			menuFunc(menuLIMenu);
 		});
+
 		menuButtonInner.addEventListener('click', function(e){
 			this.parentNode.parentNode.classList.toggle('canvas-menu-closed');
 		});
@@ -735,7 +737,7 @@ var flowchartUIController = (function(){
 		parent.insertAdjacentElement('beforeend', menuContainer);
 	};
 
-	var menuFunc = function(canvas, menuObj){
+	var menuFunc = function(menuObj){
 
 		var subMenu = document.createElement("ul");
 			subMenu.id = ("menuSubMenu");

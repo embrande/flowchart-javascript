@@ -74,21 +74,29 @@
 			grid-gap: 1em;
 		}
 
-			.canvas-menu-ul li {
+			.canvas-menu-ul > li {
 				display: inline;
 				list-style-type: none;
 				cursor: pointer;
-
-				/* Demo-Specific Styles */
+				
+				/*
 				display: flex;
 				align-items: center;
 				justify-content: center;
-
-				/* Flex Fallback */
 				margin-left: 5px;
 				margin-right: 5px;
-				flex: 1 1 200px;
+				flex: 1 1 200px;*/
 			}
+
+				.canvas-menu-ul > li ul {
+				    padding-inline-start: 0px;
+				    display:block;
+				}
+				.canvas-menu-ul > li ul li {
+					margin-left: 5px;
+					cursor: pointer;
+					list-style-type: none;
+				}
 
 
 
