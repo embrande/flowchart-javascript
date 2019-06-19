@@ -66,15 +66,21 @@
 		
 		Line color
 
-		Link to email and iframe on click
-
 		Allow a description on parent / sibling object
 
-		Location of page UI
+		Move around location of page UI
+
+		Email style support (remove native styling and prefer imported html's style)
+
+		Key of table's emblems and line items
 
 		Table of content location click
 			key press support
 			TOC text press
+
+		Filter flowchart
+
+
 
 		Accessibility support
 
