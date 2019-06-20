@@ -676,6 +676,7 @@ var flowchartUIController = (function(){
 			eventThis.lastPosY = e.clientY;
 
 			var zoom = canvas.getZoom();
+
 			canvas.zoomToPoint({
 				x: event.e.offsetX,
 				y: event.e.offsetY
@@ -738,7 +739,7 @@ var flowchartUIController = (function(){
 		menuLIMenuAHref.addEventListener('click', function(e){
 			e.preventDefault();
 			e.stopImmediatePropagation();
-			menuFunc(menuLIMenu);
+			menuFunc(menuLIMenu, can);
 		});
 
 		menuButtonInner.addEventListener('click', function(e){
@@ -749,7 +750,7 @@ var flowchartUIController = (function(){
 		parent.insertAdjacentElement('beforeend', menuContainer);
 	};
 
-	var menuFunc = function(menuObj){
+	var menuFunc = function(menuObj, can){
 
 		var subMenu = document.createElement("ul");
 			subMenu.id = ("menuSubMenu");
@@ -763,7 +764,7 @@ var flowchartUIController = (function(){
 			subMenuA.addEventListener('click', function(e){
 				e.preventDefault();
 				e.stopImmediatePropagation();
-				subMenuFunc(this.innerHTML);
+				subMenuFunc(this.innerHTML, can);
 			});
 			subMenuLi.append(subMenuA);
 			subMenu.append(subMenuLi);
@@ -776,7 +777,7 @@ var flowchartUIController = (function(){
 				subSubMenuA.addEventListener('click', function(e){
 					e.preventDefault();
 					e.stopImmediatePropagation();
-					subMenuFunc(this.innerHTML);
+					subMenuFunc(this.innerHTML, can);
 				});
 
 				subSubMenuLi.append(subSubMenuA);
@@ -788,8 +789,18 @@ var flowchartUIController = (function(){
 		menuObj.append(subMenu);
 	};
 
-	var subMenuFunc = function(textCopy){
-		console.log(textCopy);
+	var subMenuFunc = function(textCopy, can){
+		var parents = can._objects.filter(word => word.isParent != undefined);
+		var selected = parents.filter(parent => parent.text === textCopy);
+		
+		// Maybe current x y - distance from top x y ? 
+
+		can.viewportTransform[4] = selected[0].left;
+		can.viewportTransform[5] = selected[0].top;
+		can.zoomToPoint({
+			x: selected[0].left,
+			y: selected[0].top
+		}, 1.0); 
 	};
 
 
@@ -902,7 +913,6 @@ var flowchartUIController = (function(){
 			}
 		},
 		mDown(c,e,et){
-			console.log(c);
 			var evt = e.e;
 			if(evt.altKey === true){
 				drag.bool = true;
