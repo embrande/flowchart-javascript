@@ -523,7 +523,7 @@ var flowchartUIController = (function(){
 		
 	};
 
-	var textAdd = function(canvas_ref, copy, fontsFamily, fonts, x, y){
+	var textAdd = function(canvas_ref, copy, fontsFamily, fonts, x, y, parentOrNot){
 		var text = new fabric.Text(copy,{
 			'left': x,
 			'top': y,
@@ -538,6 +538,10 @@ var flowchartUIController = (function(){
 			'selectable': false,
 			'hoverCursor': 'arrow'
 		});
+
+		if(parentOrNot){
+			text.isParent = parentOrNot;
+		}
 
 		canvas_ref.add(text);
 	};
@@ -749,20 +753,43 @@ var flowchartUIController = (function(){
 
 		var subMenu = document.createElement("ul");
 			subMenu.id = ("menuSubMenu");
-
 		for(var i in menus){
 			var subMenuLi = document.createElement("li");
-				subMenuLi.innerHTML = i;
+				var subMenuA = document.createElement("a");
+					subMenuA.alt = "Menu option: " + i;
+				//parent name
+ 				subMenuA.innerHTML = menus[i][0]["name"];
 			var subSubMenu = document.createElement("ul");
-			for(var ii in menus[i]){
-				var subSubMenuLi = document.createElement("li");
-					subSubMenuLi.innerHTML = menus[i][ii]["name"];
-				subMenuLi.append(subSubMenuLi);
-			}
+			subMenuA.addEventListener('click', function(e){
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				subMenuFunc(this.innerHTML);
+			});
+			subMenuLi.append(subMenuA);
 			subMenu.append(subMenuLi);
+			for(var ii = 1; ii < menus[i].length; ii++){
+				var subSubMenuLi = document.createElement("li");
+				var subSubMenuA = document.createElement('a');
+					subSubMenuA.alt = "Sub menu option - " + menus[i][ii]["name"];
+					subSubMenuA.innerHTML = menus[i][ii]["name"];
+
+				subSubMenuA.addEventListener('click', function(e){
+					e.preventDefault();
+					e.stopImmediatePropagation();
+					subMenuFunc(this.innerHTML);
+				});
+
+				subSubMenuLi.append(subSubMenuA);
+				subSubMenu.append(subSubMenuLi);
+				subMenuLi.append(subSubMenu);
+			}
 		}
 
 		menuObj.append(subMenu);
+	};
+
+	var subMenuFunc = function(textCopy){
+		console.log(textCopy);
 	};
 
 
@@ -804,7 +831,7 @@ var flowchartUIController = (function(){
 			if(o.parent == ""){
 				// don't attempt to write out a message if is a parent// write subtitle
 				// write title
-				this.drawText(c, o.title, DOMStrings["parent_font"], DOMStrings["parent_font_size"], fontX, titleY);
+				this.drawText(c, o.title, DOMStrings["parent_font"], DOMStrings["parent_font_size"], fontX, titleY, true);
 
 
 				// create parent and sibling structure for menu
@@ -819,15 +846,15 @@ var flowchartUIController = (function(){
 
 			}else{
 				// write title
-				this.drawText(c, o.title, DOMStrings["child_title_font"], DOMStrings["child_title_size"], fontX, titleY);
+				this.drawText(c, o.title, DOMStrings["child_title_font"], DOMStrings["child_title_size"], fontX, titleY, false);
 
 				// write subtitle
-				this.drawText(c, o.subtitle, DOMStrings["child_font"], DOMStrings["child_font_size"], fontX, subTitleY);
+				this.drawText(c, o.subtitle, DOMStrings["child_font"], DOMStrings["child_font_size"], fontX, subTitleY, false);
 
 				// write subtext (type, audience, overview, etc)
-				this.drawText(c, "Overview: " + o.overview, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c1Y);
-				this.drawText(c, "Audience: " + o.audience, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c2Y);
-				this.drawText(c, "Method: " + o.type, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c3Y);
+				this.drawText(c, "Overview: " + o.overview, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c1Y, false);
+				this.drawText(c, "Audience: " + o.audience, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c2Y, false);
+				this.drawText(c, "Method: " + o.type, DOMStrings["paragraph_font"], DOMStrings["paragraph_font_size"], fontX, c3Y, false);
 
 				//write message
 				this.writeMessage(c, o.message, o.link, fontX, c4Y);
@@ -849,9 +876,9 @@ var flowchartUIController = (function(){
 		writeMessage: function(c, m, l, x, y){
 			writeMessageToCanvas(c, m, l, x, y);
 		},
-		drawText: function(c, co, ff, f, x, y){
+		drawText: function(c, co, ff, f, x, y, t){
 			// create method that counts every certain word and breaks the texts
-			textAdd(c, co, ff, f, x, y);
+			textAdd(c, co, ff, f, x, y, t);
 		},
 		drawImage: function(c, i, x, y){
 			imgAdd(c, i, x, y);
@@ -875,6 +902,7 @@ var flowchartUIController = (function(){
 			}
 		},
 		mDown(c,e,et){
+			console.log(c);
 			var evt = e.e;
 			if(evt.altKey === true){
 				drag.bool = true;
