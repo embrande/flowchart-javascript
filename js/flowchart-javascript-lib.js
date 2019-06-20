@@ -793,13 +793,13 @@ var flowchartUIController = (function(){
 		var parents = can._objects.filter(word => word.isParent != undefined);
 		var selected = parents.filter(parent => parent.text === textCopy);
 		
-		// Maybe current x y - distance from top x y ? 
-
-		can.viewportTransform[4] = selected[0].left;
-		can.viewportTransform[5] = selected[0].top;
+		console.log(can.zoomToPoint);
+		
+		can.viewportTransform[4] = -(selected[0].left) + 200;
+		can.viewportTransform[5] = -(selected[0].top) + 200;
 		can.zoomToPoint({
-			x: selected[0].left,
-			y: selected[0].top
+			x: -(selected[0].left) + 200,
+			y: -(selected[0].top) + 200
 		}, 1.0); 
 	};
 
